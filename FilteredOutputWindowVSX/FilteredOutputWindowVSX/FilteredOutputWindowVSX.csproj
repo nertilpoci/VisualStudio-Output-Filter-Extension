@@ -68,6 +68,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Tools\RelayCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
