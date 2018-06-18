@@ -6,17 +6,15 @@
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="300" d:DesignWidth="500"
              Name="MyToolWindow">
-
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
-
                 <ToolBar>
                     <Button MaxHeight="50" Name="StartListeningButton" Click="StartListeningButton_Click"  >
                         <!--<Image Source="Resources/starticon.png" ></Image>--> Start
@@ -25,32 +23,26 @@
                         <!--<Image Source="Resources/stopicon.png" ></Image>--> Stop
                     </Button>
                     <Button   Name="CleanButton" Click="CleanButton_Click"  >
-                       Clear
+                        Clear
                     </Button>
                     <CheckBox IsChecked="True" Name="ScrollToEndCheck">Autoscroll</CheckBox>
+                    <Separator/>
+                    <Label>Tags Comma Separated</Label>
+                    <TextBox TextChanged="tagsBox_TextChanged" 
+                             Grid.Column="1" 
+                             Name="tagsBox" 
+                             HorizontalAlignment="Stretch" 
+                             Width="200" 
+                             VerticalContentAlignment="Center"/>
                 </ToolBar>
             </ToolBarTray>
-            <Grid DockPanel.Dock="Top"  HorizontalAlignment="Stretch" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    <ColumnDefinition  Width="*">
-                </ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock>Tags Comma Separated</TextBlock>
-                <TextBox TextChanged="tagsBox_TextChanged"  Grid.Column="1" Name="tagsBox" HorizontalAlignment="Stretch"></TextBox>
-    </Grid>
-            <RichTextBox 
-             Background="LightGray"
-            VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="outputBox">
+            <RichTextBox VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="outputBox">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
                         <Setter Property="Margin" Value="1"/>
                     </Style>
                 </RichTextBox.Resources>
             </RichTextBox>
-
-
-    </DockPanel>
-       
+        </DockPanel>
     </Grid>
 </UserControl>
