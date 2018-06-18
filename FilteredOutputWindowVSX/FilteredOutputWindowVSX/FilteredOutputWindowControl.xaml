@@ -16,10 +16,10 @@
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <Button MaxHeight="50" Name="StartListeningButton" Click="StartListeningButton_Click"  >
+                    <Button MaxHeight="50" Name="StartListeningButton" >
                         <!--<Image Source="Resources/starticon.png" ></Image>--> Start
                     </Button>
-                    <Button MaxHeight="50"  Name="StopListeningButton" Visibility="Collapsed" Click="StopListeningButton_Click"  >
+                    <Button MaxHeight="50"  Name="StopListeningButton" Visibility="Collapsed" >
                         <!--<Image Source="Resources/stopicon.png" ></Image>--> Stop
                     </Button>
                     <Button   Name="CleanButton" Click="CleanButton_Click"  >
