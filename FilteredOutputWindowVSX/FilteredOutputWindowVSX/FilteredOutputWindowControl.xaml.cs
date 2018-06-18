@@ -21,19 +21,6 @@
         public FilteredOutputWindowControl()
         {
             this.InitializeComponent();
-            SetupEvents();
-            tagsBox.Text = Properties.Settings.Default.Tags ?? "";
-        }
-
-        private DTE _dte;
-        private Events _dteEvents;
-        private OutputWindowEvents _documentEvents;
-
-        private void SetupEvents()
-        {
-            _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
-            _dteEvents = _dte.Events;
-            _documentEvents = _dteEvents.OutputWindowEvents;         
         }
 
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
@@ -78,34 +65,14 @@
             }
         }
 
-        private void StartListeningButton_Click(object sender, RoutedEventArgs e)
-        {
-            _documentEvents.PaneUpdated += _documentEvents_PaneUpdated;
-            StartListeningButton.Visibility = Visibility.Hidden;
-            StopListeningButton.Visibility = Visibility.Visible;
-        }
-
-        private void StopListeningButton_Click(object sender, RoutedEventArgs e)
-        {
-            _documentEvents.PaneUpdated -= _documentEvents_PaneUpdated;
-            StartListeningButton.Visibility = Visibility.Visible;
-            StopListeningButton.Visibility = Visibility.Hidden;
-        }
-
-        private void CleanButton_Click(object sender, RoutedEventArgs e)
-        {
-            IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            Guid debugPaneGuid = VSConstants.GUID_OutWindowDebugPane;
-            IVsOutputWindowPane pane;
-            outWindow.GetPane(ref debugPaneGuid, out pane);
-            pane.Clear();
-            outputBox.Document.Blocks.Clear();
-        }
-
-        private void tagsBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Properties.Settings.Default.Tags = tagsBox.Text;
-            Properties.Settings.Default.Save();
-        }
+        //private void CleanButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+        //    Guid debugPaneGuid = VSConstants.GUID_OutWindowDebugPane;
+        //    IVsOutputWindowPane pane;
+        //    outWindow.GetPane(ref debugPaneGuid, out pane);
+        //    pane.Clear();
+        //    outputBox.Document.Blocks.Clear();
+        //}
     }
 }
