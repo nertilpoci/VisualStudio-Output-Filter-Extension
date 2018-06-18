@@ -28,6 +28,7 @@
         private DTE _dte;
         private Events _dteEvents;
         private OutputWindowEvents _documentEvents;
+
         private void SetupEvents()
         {
             _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
