@@ -23,32 +23,48 @@
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <Button MaxHeight="50" Name="StartListeningButton" Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource False}}">
+                    <Button MaxHeight="50" 
+                            Command="{Binding StartRecording}"
+                            Name="StartListeningButton" 
+                            Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource False}}">
                         <!--<Image Source="Resources/starticon.png" ></Image>--> Start
                     </Button>
-                    <Button MaxHeight="50"  Name="StopListeningButton" Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource True}}" >
+                    <Button MaxHeight="50" 
+                            Command="{Binding StopRecording}"
+                            Name="StopListeningButton" 
+                            Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource True}}" >
                         <!--<Image Source="Resources/stopicon.png" ></Image>--> Stop
                     </Button>
-                    <Button   Name="CleanButton" >
+                    <Button Name="CleanButton" 
+                            Command="{Binding Clear}"
+                            >
                         Clear
                     </Button>
-                    <CheckBox IsChecked="True" Name="ScrollToEndCheck">Autoscroll</CheckBox>
+                    <CheckBox IsChecked="{Binding AutoScroll}"
+                              Name="ScrollToEndCheck">
+                        Autoscroll
+                    </CheckBox>
                     <Separator/>
                     <Label>Tags in CSV format: </Label>
-                    <TextBox Grid.Column="1" 
-                             Name="tagsBox" 
+                    <TextBox Name="tagsBox" 
+                             Text="{Binding Tags}"
                              HorizontalAlignment="Stretch" 
                              Width="200" 
                              VerticalContentAlignment="Center"/>
                 </ToolBar>
             </ToolBarTray>
-            <RichTextBox VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="outputBox" >
+            <Label Content="{Binding Output}"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Padding="10">
+            </Label>
+            <!--<RichTextBox VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="outputBox" >
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
                         <Setter Property="Margin" Value="1"/>
                     </Style>
                 </RichTextBox.Resources>
-            </RichTextBox>
+            </RichTextBox>-->
         </DockPanel>
     </Grid>
 </UserControl>
