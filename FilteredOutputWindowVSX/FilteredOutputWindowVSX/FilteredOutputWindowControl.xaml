@@ -5,9 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             xmlns:s="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="300" d:DesignWidth="500"
+             xmlns:tools="clr-namespace:FilteredOutputWindowVSX.Tools"
              Name="MyToolWindow">
+    <UserControl.Resources>
+        <tools:BoolToVisConverter x:Key="BoolToVisibility"/>
+        <s:Boolean x:Key="True">True</s:Boolean>
+        <s:Boolean x:Key="False">False</s:Boolean>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -16,20 +23,19 @@
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <Button MaxHeight="50" Name="StartListeningButton" >
+                    <Button MaxHeight="50" Name="StartListeningButton" Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource False}}">
                         <!--<Image Source="Resources/starticon.png" ></Image>--> Start
                     </Button>
-                    <Button MaxHeight="50"  Name="StopListeningButton" Visibility="Collapsed" >
+                    <Button MaxHeight="50"  Name="StopListeningButton" Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource True}}" >
                         <!--<Image Source="Resources/stopicon.png" ></Image>--> Stop
                     </Button>
-                    <Button   Name="CleanButton" Click="CleanButton_Click"  >
+                    <Button   Name="CleanButton" >
                         Clear
                     </Button>
                     <CheckBox IsChecked="True" Name="ScrollToEndCheck">Autoscroll</CheckBox>
                     <Separator/>
-                    <Label>Tags Comma Separated</Label>
-                    <TextBox TextChanged="tagsBox_TextChanged" 
-                             Grid.Column="1" 
+                    <Label>Tags in CSV format: </Label>
+                    <TextBox Grid.Column="1" 
                              Name="tagsBox" 
                              HorizontalAlignment="Stretch" 
                              Width="200" 
