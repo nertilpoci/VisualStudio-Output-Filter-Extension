@@ -53,11 +53,15 @@
                              VerticalContentAlignment="Center"/>
                 </ToolBar>
             </ToolBarTray>
+            <ScrollViewer>
             <Label Content="{Binding Output}"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
-                   Padding="10">
+                   Padding="10"
+                   Foreground="White"
+                   >
             </Label>
+            </ScrollViewer>
             <!--<RichTextBox VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="outputBox" >
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">

@@ -123,7 +123,7 @@ namespace FilteredOutputWindowVSX
 
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {
-            if (string.IsNullOrEmpty(Output)) return;
+            if (string.IsNullOrEmpty(Tags)) return;
             pPane.TextDocument.Selection.SelectAll();
             if (pPane.Name == "Debug")
             {
