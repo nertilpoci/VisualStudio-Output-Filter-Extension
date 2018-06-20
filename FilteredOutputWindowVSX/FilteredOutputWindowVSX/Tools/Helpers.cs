@@ -1,15 +1,10 @@
 ﻿using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FilteredOutputWindowVSX
+namespace FilteredOutputWindowVSX.Tools
 {
-  public static class Helpers
+    public static class Helpers
     {
         public static WritableSettingsStore GetWritableSettingsStore(this SVsServiceProvider vsServiceProvider)
         {
