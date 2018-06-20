@@ -137,6 +137,7 @@ namespace FilteredOutputWindowVSX
                     Output = string.Empty;
                     var tags = Tags.TrimStart().Split(',');
                     var textLines = sel.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
                     foreach (var line in textLines)
                     {
                         foreach (var tag in tags)
@@ -155,7 +156,6 @@ namespace FilteredOutputWindowVSX
                 }
                 catch (Exception ex)
                 {
-
 
                 }
             }

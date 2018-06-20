@@ -21,6 +21,12 @@
         public FilteredOutputWindowControl()
         {
             this.InitializeComponent();
+
+            Output.SizeChanged += (s, e) =>
+            {
+                if (Scroller.Tag is bool autoScroll && autoScroll)
+                    Scroller.ScrollToEnd();
+            };
         }
 
         //private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
@@ -48,7 +54,7 @@
         //                        outputBox.AppendText(line.Replace(tag.TrimStart(), ""));
         //                        outputBox.AppendText(Environment.NewLine);
         //                    }
-                               
+
         //                }
         //                if (tags.Any(t => line.StartsWith(t))){
         //                    ;
