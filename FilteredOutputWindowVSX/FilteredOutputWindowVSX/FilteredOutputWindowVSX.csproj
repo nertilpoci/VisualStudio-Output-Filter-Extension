@@ -70,6 +70,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Tools\RelayCommand.cs" />
+    <Compile Include="Tools\RevertBoolConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

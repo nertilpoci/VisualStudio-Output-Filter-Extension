@@ -29,6 +29,11 @@ namespace FilteredOutputWindowVSX
 
             Tags = Properties.Settings.Default.Tags ?? "";
             AutoScroll = Properties.Settings.Default.AutoScroll;
+
+            _documentEvents.PaneUpdated += (e)=> 
+            {
+                _currentText = GetPaneText(e);
+            };
         }
 
         private void SetupEvents()
@@ -38,8 +43,9 @@ namespace FilteredOutputWindowVSX
             _documentEvents = _dteEvents.OutputWindowEvents;
         }
 
-        private string[] _tagsArray { get => Tags.TrimStart().Split(','); }
+        private IEnumerable<string> _tagsArray { get => Tags.TrimStart().Split(',').Where(a => !string.IsNullOrEmpty(a)); }
         private string _oldText = string.Empty;
+        private string _currentText = string.Empty;
 
         #region Prop for ViewModel
         private StringBuilder _output = new StringBuilder();
@@ -85,7 +91,12 @@ namespace FilteredOutputWindowVSX
                 if (_tags == value) return;
 
                 _tags = value;
+
                 NotifyPropertyChanged();
+
+                _output.Clear();
+
+                AddToOutput(ProcessString(_currentText, _tags));
 
                 Properties.Settings.Default.Tags = value;
                 Properties.Settings.Default.Save();
@@ -145,13 +156,9 @@ namespace FilteredOutputWindowVSX
 
             try
             {
-                pPane.TextDocument.Selection.SelectAll();
+                var newText = _currentText.Substring(_oldText.Count() - 1 > 0 ? _oldText.Count() - 1 : 0);
 
-                var allText = pPane.TextDocument.Selection.Text;
-
-                var newText = allText.Substring(_oldText.Count() - 1 > 0 ? _oldText.Count() - 1 : 0);
-
-                _oldText = allText;
+                _oldText = _currentText;
 
                 AddToOutput(ProcessString(newText, Tags));
             }
@@ -159,6 +166,13 @@ namespace FilteredOutputWindowVSX
             {
 
             }
+        }
+
+        private static string GetPaneText(OutputWindowPane pPane)
+        {
+            pPane.TextDocument.Selection.SelectAll();
+
+            return pPane.TextDocument.Selection.Text;
         }
 
         private IEnumerable<string> ProcessString(string input, string tags)

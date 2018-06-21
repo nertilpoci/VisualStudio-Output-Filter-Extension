@@ -12,6 +12,7 @@
              Name="MyToolWindow">
     <UserControl.Resources>
         <tools:BoolToVisConverter x:Key="BoolToVisibility"/>
+        <tools:RevertBoolConverter x:Key="RevertBool"/>
         <s:Boolean x:Key="True">True</s:Boolean>
         <s:Boolean x:Key="False">False</s:Boolean>
     </UserControl.Resources>
@@ -37,6 +38,7 @@
                     </Button>
                     <Button Name="CleanButton" 
                             Command="{Binding Clear}"
+                            IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
                             >
                         Clear
                     </Button>
@@ -47,10 +49,12 @@
                     <Separator/>
                     <Label>Tags in CSV format:</Label>
                     <TextBox Name="tagsBox" 
-                             Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged}"
+                             Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                              HorizontalAlignment="Stretch" 
                              Width="200" 
-                             VerticalContentAlignment="Center"/>
+                             VerticalContentAlignment="Center"
+                             IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
+                             />
                 </ToolBar>
             </ToolBarTray>
             <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
