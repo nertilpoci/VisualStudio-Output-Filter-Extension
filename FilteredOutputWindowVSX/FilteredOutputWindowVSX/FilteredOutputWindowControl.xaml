@@ -53,7 +53,7 @@
                              VerticalContentAlignment="Center"/>
                 </ToolBar>
             </ToolBarTray>
-            <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}">
+            <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
                 <Label Name="Output" Content="{Binding Output}"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"

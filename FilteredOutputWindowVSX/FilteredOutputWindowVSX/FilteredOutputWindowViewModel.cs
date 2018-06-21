@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.ComponentModel;
 using FilteredOutputWindowVSX.Tools;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace FilteredOutputWindowVSX
 {
@@ -36,8 +37,11 @@ namespace FilteredOutputWindowVSX
             _documentEvents = _dteEvents.OutputWindowEvents;
         }
 
+        private string[] _tagsArray { get => Tags.TrimStart().Split(','); }
+        private string _oldText = string.Empty;
+
         #region Prop for ViewModel
-        private string _output;
+        private StringBuilder _output = new StringBuilder();
         private string _tags;
         private bool _autoScroll;
         private bool _isRecording;
@@ -52,13 +56,13 @@ namespace FilteredOutputWindowVSX
                 NotifyPropertyChanged();
             }
         }
+
         public string Output
         {
-            get => _output;
+            get => _output.ToString();
             set
             {
-                if (_output == value) return;
-                _output = value;
+                _output.AppendLine(value);
                 NotifyPropertyChanged();
             }
         }
@@ -76,6 +80,8 @@ namespace FilteredOutputWindowVSX
                 Properties.Settings.Default.Save();
             }
         }
+
+
         public bool AutoScroll
         {
             get => _autoScroll;
@@ -111,52 +117,50 @@ namespace FilteredOutputWindowVSX
 
             Clear = new RelayCommand(() =>
             {
+                _oldText = string.Empty;
+                _output.Clear();
+                NotifyPropertyChanged(nameof(Output));
+
                 IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
                 Guid debugPaneGuid = VSConstants.GUID_OutWindowDebugPane;
                 IVsOutputWindowPane pane;
                 outWindow.GetPane(ref debugPaneGuid, out pane);
                 pane.Clear();
-
-                Output = string.Empty;
             });
         }
 
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {
             if (string.IsNullOrEmpty(Tags)) return;
-            pPane.TextDocument.Selection.SelectAll();
-            if (pPane.Name == "Debug")
-            {
-                try
-                {
-                    //TextDocument doc = pPane.TextDocument;
-                    TextSelection sel = pPane.TextDocument.Selection;
-                    sel.StartOfDocument(false);
-                    sel.EndOfDocument(true);
-                    Output = string.Empty;
-                    var tags = Tags.TrimStart().Split(',');
-                    var textLines = sel.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            if (pPane.Name != "Debug") return;
 
-                    foreach (var line in textLines)
+            try
+            {
+                pPane.TextDocument.Selection.SelectAll();
+
+                var allText = pPane.TextDocument.Selection.Text;
+
+                var newText = allText.Substring(_oldText.Count() - 1 > 0 ? _oldText.Count() - 1 : 0);
+
+                _oldText = allText;
+
+                var textLines = newText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                                       .Where(a => !string.IsNullOrEmpty(a));
+
+                foreach (var line in textLines)
+                {
+                    foreach (var tag in _tagsArray)
                     {
-                        foreach (var tag in tags)
+                        if (line.StartsWith(tag))
                         {
-                            if (line.StartsWith(tag))
-                            {
-                                Output += (line.Replace(tag.TrimStart(), ""));
-                                Output += (Environment.NewLine);
-                            }
-                        }
-                        if (tags.Any(t => line.StartsWith(t)))
-                        {
-                            ;
+                            Output = line.Replace(tag.TrimStart(), "");
                         }
                     }
                 }
-                catch (Exception ex)
-                {
+            }
+            catch (Exception ex)
+            {
 
-                }
             }
         }
 
