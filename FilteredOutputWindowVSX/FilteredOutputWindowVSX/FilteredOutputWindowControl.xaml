@@ -47,7 +47,7 @@
                     <Separator/>
                     <Label>Tags in CSV format:</Label>
                     <TextBox Name="tagsBox" 
-                             Text="{Binding Tags}"
+                             Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged}"
                              HorizontalAlignment="Stretch" 
                              Width="200" 
                              VerticalContentAlignment="Center"/>

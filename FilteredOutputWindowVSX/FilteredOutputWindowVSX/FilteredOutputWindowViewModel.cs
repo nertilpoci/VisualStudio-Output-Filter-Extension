@@ -129,9 +129,8 @@ namespace FilteredOutputWindowVSX
             {
                 try
                 {
-                    var name = pPane.Name;
-                    TextDocument doc = pPane.TextDocument;
-                    TextSelection sel = doc.Selection;
+                    //TextDocument doc = pPane.TextDocument;
+                    TextSelection sel = pPane.TextDocument.Selection;
                     sel.StartOfDocument(false);
                     sel.EndOfDocument(true);
                     Output = string.Empty;
