@@ -61,13 +61,6 @@
                    Foreground="White"
                    />
             </ScrollViewer>
-            <!--<RichTextBox VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Name="outputBox" >
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="1"/>
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>-->
         </DockPanel>
     </Grid>
 </UserControl>
