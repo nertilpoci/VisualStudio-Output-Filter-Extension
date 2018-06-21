@@ -12,6 +12,7 @@ using System.ComponentModel;
 using FilteredOutputWindowVSX.Tools;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Collections.Generic;
 
 namespace FilteredOutputWindowVSX
 {
@@ -57,6 +58,15 @@ namespace FilteredOutputWindowVSX
             }
         }
 
+        private void AddToOutput(IEnumerable<string> input)
+        {
+            foreach (var i in input)
+            {
+                _output.AppendLine(i);
+            }
+            NotifyPropertyChanged(nameof(Output));
+        }
+
         public string Output
         {
             get => _output.ToString();
@@ -66,6 +76,7 @@ namespace FilteredOutputWindowVSX
                 NotifyPropertyChanged();
             }
         }
+
         public string Tags
         {
             get => _tags;
@@ -80,8 +91,6 @@ namespace FilteredOutputWindowVSX
                 Properties.Settings.Default.Save();
             }
         }
-
-
         public bool AutoScroll
         {
             get => _autoScroll;
@@ -144,23 +153,28 @@ namespace FilteredOutputWindowVSX
 
                 _oldText = allText;
 
-                var textLines = newText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
-                                       .Where(a => !string.IsNullOrEmpty(a));
-
-                foreach (var line in textLines)
-                {
-                    foreach (var tag in _tagsArray)
-                    {
-                        if (line.StartsWith(tag))
-                        {
-                            Output = line.Replace(tag.TrimStart(), "");
-                        }
-                    }
-                }
+                AddToOutput(ProcessString(newText, Tags));
             }
             catch (Exception ex)
             {
 
+            }
+        }
+
+        private IEnumerable<string> ProcessString(string input, string tags)
+        {
+            var textLines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                                       .Where(a => !string.IsNullOrEmpty(a));
+
+            foreach (var line in textLines)
+            {
+                foreach (var tag in _tagsArray)
+                {
+                    if (line.StartsWith(tag))
+                    {
+                        yield return line.Replace(tag.TrimStart(), "");
+                    }
+                }
             }
         }
 
