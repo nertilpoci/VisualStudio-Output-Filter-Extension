@@ -58,12 +58,13 @@
                 </ToolBar>
             </ToolBarTray>
             <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
-                <Label Name="Output" Content="{Binding Output}"
-                   HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch"
-                   Padding="10"
-                   Foreground="White"
-                   />
+                <TextBox Name="Output" Text="{Binding Output}"
+                         IsReadOnly="True"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         Padding="10"
+                         />
+                         <!--Foreground="White"-->
             </ScrollViewer>
         </DockPanel>
     </Grid>
