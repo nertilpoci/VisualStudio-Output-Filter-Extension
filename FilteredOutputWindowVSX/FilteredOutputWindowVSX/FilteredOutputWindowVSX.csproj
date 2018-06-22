@@ -54,6 +54,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controls\FilterBuilder.xaml.cs">
+      <DependentUpon>FilterBuilder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\EnumDescriptionConverter.cs" />
+    <Compile Include="Enums\Operators.cs" />
+    <Compile Include="Enums\LogicalGate.cs" />
+    <Compile Include="Extensions\EnumBindingSourceExtensions.cs" />
     <Compile Include="FilteredOutputWindow.cs" />
     <Compile Include="FilteredOutputWindowCommand.cs" />
     <Compile Include="FilteredOutputWindowControl.xaml.cs">
@@ -61,6 +68,9 @@
     </Compile>
     <Compile Include="FilteredOutputWindowPackage.cs" />
     <Compile Include="FilteredOutputWindowViewModel.cs" />
+    <Compile Include="Models\LogicGate.cs" />
+    <Compile Include="Models\FilterItem.cs" />
+    <Compile Include="Models\Operator.cs" />
     <Compile Include="Tools\BoolToVisConverter.cs" />
     <Compile Include="Tools\Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -71,6 +81,7 @@
     </Compile>
     <Compile Include="Tools\RelayCommand.cs" />
     <Compile Include="Tools\RevertBoolConverter.cs" />
+    <Compile Include="ViewModels\FilterBuilderViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -224,6 +235,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\FilterBuilder.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FilteredOutputWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -6,6 +6,7 @@
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d"
+             xmlns:controls="clr-namespace:FilteredOutputWindowVSX.Controls"
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="300" d:DesignWidth="500"
              xmlns:tools="clr-namespace:FilteredOutputWindowVSX.Tools"
@@ -57,6 +58,7 @@
                              />
                 </ToolBar>
             </ToolBarTray>
+            <controls:FilterBuilder Height="200" DockPanel.Dock="Top" HorizontalAlignment="Stretch"></controls:FilterBuilder>
             <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
                 <TextBox Name="Output" Text="{Binding Output}"
                          IsReadOnly="True"
