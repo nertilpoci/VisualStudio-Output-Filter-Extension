@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type models:FilterItem}">
+        <DataTemplate DataType="{x:Type models:StringFilterItem}">
             <StackPanel Orientation="Horizontal">
                 <ComboBox Width="100"  ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:StringOperation}}}" SelectedItem="{Binding Operation }"></ComboBox>
                 <TextBox Width="100" Text="{Binding Name}"></TextBox>
