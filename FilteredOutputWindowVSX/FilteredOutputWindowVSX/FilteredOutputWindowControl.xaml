@@ -43,6 +43,12 @@
                             >
                         Clear
                     </Button>
+                    <Button Name="AddNewFilter" 
+                            Command="{Binding AddNewFilter}"
+                            IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
+                            >
+                        Clear
+                    </Button>
                     <CheckBox IsChecked="{Binding AutoScroll}"
                               Name="ScrollToEndCheck">
                         Autoscroll

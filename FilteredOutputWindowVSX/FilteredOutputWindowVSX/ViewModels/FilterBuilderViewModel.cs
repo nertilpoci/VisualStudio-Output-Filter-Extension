@@ -19,15 +19,9 @@ namespace FilteredOutputWindowVSX.ViewModels
 
         public FilterBuilderViewModel()
         {
-            Items= new ObservableCollection<object> { new StringFilterItem { Value = "test",  }, new LogicGate<string> { Gate = LogicalGate.Or } , new StringFilterItem { Value = "test2"}};
+            Filter =  new FilterContainer<StringFilterItem> { Filter = new StringFilterItem { Value = "test", NextGate = new LogicGate(), Next = new StringFilterItem { Value = "test2" } }, Name = "Test" };
         }
-        public Expression<Func<string,bool>> GetFilterExpression()
-        {
-            var hasLogicalGates = this.Items.Any(z => typeof(LogicalGate) == z.GetType());
-            
-
-        }
-        public ObservableCollection<object> Items { get; set; }
+          public FilterContainer<StringFilterItem> Filter { get; }
 
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

@@ -68,8 +68,11 @@
     </Compile>
     <Compile Include="FilteredOutputWindowPackage.cs" />
     <Compile Include="FilteredOutputWindowViewModel.cs" />
+    <Compile Include="Helpers\PredicateBuilder.cs" />
+    <Compile Include="Interface\IFilterPart.cs" />
+    <Compile Include="Models\FilterContainer.cs" />
     <Compile Include="Models\LogicGate.cs" />
-    <Compile Include="Models\FilterItem.cs" />
+    <Compile Include="Models\StringFilterItem.cs" />
     <Compile Include="Models\Operator.cs" />
     <Compile Include="Tools\BoolToVisConverter.cs" />
     <Compile Include="Tools\Helpers.cs" />
@@ -251,9 +254,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interface\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.9\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.9\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" />

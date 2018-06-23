@@ -9,11 +9,11 @@ using System.Linq.Expressions;
 
 namespace FilteredOutputWindowVSX.Models
 {
-    public class LogicGate<T>
+    public class LogicGate
     {
         public LogicalGate Gate { get; set; }
 
-        public Expression<Func<T, bool>> Expression(Expression<Func<T, bool>>  expr1, Expression<Func<T, bool>> expr2=null)
+        public Expression<Func<T, bool>> Expression<T>(Expression<Func<T, bool>>  expr1, Expression<Func<T, bool>> expr2=null)
         {
             if (expr2 == null) return expr1;
 

@@ -9,7 +9,7 @@ namespace FilteredOutputWindowVSX.Interface
 {
     public interface IFilterPart<TValue>
     {
-        Expression<Func<TValue, bool>> Expression(TValue value);
+        Expression<Func<TValue, bool>> Expression { get; }
 
     }
 }

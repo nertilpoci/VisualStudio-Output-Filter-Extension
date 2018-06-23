@@ -115,7 +115,8 @@ namespace FilteredOutputWindowVSX
                 Properties.Settings.Default.Save();
             }
         }
-
+        
+        public ICommand AddNewFilter { get; private set; }
         public ICommand StartRecording { get; private set; }
         public ICommand StopRecording { get; private set; }
         public ICommand Clear { get; private set; }
@@ -146,6 +147,11 @@ namespace FilteredOutputWindowVSX
                 IVsOutputWindowPane pane;
                 outWindow.GetPane(ref debugPaneGuid, out pane);
                 pane.Clear();
+            });
+
+            AddNewFilter= new RelayCommand(() =>
+            {
+
             });
         }
 
