@@ -13,6 +13,10 @@ namespace FilteredOutputWindowVSX.Controls
             InitializeComponent();
             this.DataContext = new FilterBuilderViewModel();
         }
-       
+
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+
+        }
     }
 }

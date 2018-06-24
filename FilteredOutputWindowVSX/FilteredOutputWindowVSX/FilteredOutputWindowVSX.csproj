@@ -67,7 +67,7 @@
       <DependentUpon>FilteredOutputWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="FilteredOutputWindowPackage.cs" />
-    <Compile Include="FilteredOutputWindowViewModel.cs" />
+    <Compile Include="ViewModels\FilteredOutputWindowViewModel.cs" />
     <Compile Include="Helpers\PredicateBuilder.cs" />
     <Compile Include="Interface\IFilterPart.cs" />
     <Compile Include="Models\FilterContainer.cs" />
