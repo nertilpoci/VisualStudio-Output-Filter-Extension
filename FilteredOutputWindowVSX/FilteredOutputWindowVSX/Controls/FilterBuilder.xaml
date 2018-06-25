@@ -13,28 +13,25 @@
         <DataTemplate DataType="{x:Type models:StringFilterItem}">
             <WrapPanel>
                 <ComboBox Height="20" Width="100"  ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:StringOperation}}}" SelectedItem="{Binding Operation }"></ComboBox>
-                <TextBox Width="100" Height="20" Text="{Binding Name}"></TextBox>
-                <ContentPresenter Content="{Binding NextGate}"></ContentPresenter>
-                <ContentPresenter Content="{Binding Next}"></ContentPresenter>
+                <TextBox Width="100" Height="20" Text="{Binding Value}"></TextBox>
             </WrapPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type models:LogicGate}">
             <ComboBox Width="50"  Height="20" ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}" SelectedItem="{Binding Gate}" ></ComboBox>
         </DataTemplate>
-        <!--<DataTemplate x:Key="filterItem">
-            <StackPanel Orientation="Horizontal">
-                <ComboBox Width="100"  ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:StringOperation}}}" SelectedItem="{Binding Operation }"></ComboBox>
-                <TextBox Width="100" Text="{Binding Name}"></TextBox>
-                <ComboBox Width="50" ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}" SelectedItem="{Binding NextGate}" ></ComboBox>
-            </StackPanel>
+        <DataTemplate DataType="{x:Type models:StringFilterContainer}">
+            <WrapPanel>
+                <Label>Name</Label>
+                <TextBox Width="100" Height="20" Text="{Binding Name}"></TextBox>
+                <ContentPresenter Grid.Row="1" Content="{Binding Filter}"></ContentPresenter>
+                <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}},
+                                                         Path=DataContext.SaveFilterCommand}">Save</Button>
+                <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}},
+                                                         Path=DataContext.CancelCommand}" >Cancel</Button>
+            </WrapPanel>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type enums:LogicalGate}">
-            <StackPanel Orientation="Horizontal">
-                <ContentPresenter ContentTemplate="{StaticResource filterItem}" Content="{Binding }" />
-                <ContentPresenter ContentTemplate="{StaticResource filterItem}"  Content="{Binding Next}"/>
-            </StackPanel>
-        </DataTemplate>-->
-
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -42,11 +39,7 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Height="20" Orientation="Horizontal">
-            <Label>Name </Label>
-            <TextBox  Text="{Binding Filter.Name, Mode=TwoWay}"></TextBox>
-        </StackPanel>
-        <ContentPresenter Grid.Row="1" Content="{Binding Filter.Filter}"></ContentPresenter>
-        <Button Command="{Binding Add}">Add</Button>
+        <ContentPresenter Grid.Row="1" Content="{Binding EditingFilter}"></ContentPresenter>
+        
     </Grid>
 </UserControl>

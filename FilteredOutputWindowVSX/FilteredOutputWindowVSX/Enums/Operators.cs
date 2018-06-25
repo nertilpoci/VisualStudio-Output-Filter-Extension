@@ -10,6 +10,7 @@ namespace FilteredOutputWindowVSX.Enums
     {
         Contains,
         StartsWith,
-        EndsWith
+        EndsWith,
+        Regex
     }
 }

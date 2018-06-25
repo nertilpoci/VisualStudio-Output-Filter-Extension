@@ -13,10 +13,14 @@ using FilteredOutputWindowVSX.Tools;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Collections.Generic;
+using FilteredOutputWindowVSX.Models;
+using System.Collections.ObjectModel;
+using FilteredOutputWindowVSX.ViewModels;
+using System.Linq.Expressions;
 
 namespace FilteredOutputWindowVSX
 {
-    public class FilteredOutputWindowViewModel : INotifyPropertyChanged
+    public class FilteredOutputWindowViewModel :NotifyBase
     {
         private DTE _dte;
         private Events _dteEvents;
@@ -27,13 +31,13 @@ namespace FilteredOutputWindowVSX
             SetupEvents();
             CreateCommands();
 
-            Tags = Properties.Settings.Default.Tags ?? "";
             AutoScroll = Properties.Settings.Default.AutoScroll;
 
             _documentEvents.PaneUpdated += (e)=> 
             {
                 _currentText = GetPaneText(e);
             };
+           Filters= new ObservableCollection<StringFilterContainer>(GetSettings());
         }
 
         private void SetupEvents()
@@ -43,7 +47,6 @@ namespace FilteredOutputWindowVSX
             _documentEvents = _dteEvents.OutputWindowEvents;
         }
 
-        private IEnumerable<string> _tagsArray { get => Tags.TrimStart().Split(',').Where(a => !string.IsNullOrEmpty(a)); }
         private string _oldText = string.Empty;
         private string _currentText = string.Empty;
 
@@ -53,6 +56,13 @@ namespace FilteredOutputWindowVSX
         private bool _autoScroll;
         private bool _isRecording;
 
+        public ObservableCollection<StringFilterContainer> Filters { get; set; }
+
+        private StringFilterContainer _editingFilter;
+        public StringFilterContainer EditingFilter { get => _editingFilter; set { _editingFilter = value; NotifyPropertyChanged(); } }
+
+        private StringFilterContainer _currentFilter;
+        public StringFilterContainer CurrentFilter { get => _currentFilter; set { _currentFilter = value; NotifyPropertyChanged(); } }
         public bool IsRecording
         {
             get => _isRecording;
@@ -83,25 +93,7 @@ namespace FilteredOutputWindowVSX
             }
         }
 
-        public string Tags
-        {
-            get => _tags;
-            set
-            {
-                if (_tags == value) return;
-
-                _tags = value;
-
-                NotifyPropertyChanged();
-
-                _output.Clear();
-
-                AddToOutput(ProcessString(_currentText, _tags));
-
-                Properties.Settings.Default.Tags = value;
-                Properties.Settings.Default.Save();
-            }
-        }
+      
         public bool AutoScroll
         {
             get => _autoScroll;
@@ -117,9 +109,14 @@ namespace FilteredOutputWindowVSX
         }
         
         public ICommand AddNewFilter { get; private set; }
+        public ICommand EditFilter { get; private set; }
+        public ICommand DeleteFilter { get; private set; }
         public ICommand StartRecording { get; private set; }
         public ICommand StopRecording { get; private set; }
         public ICommand Clear { get; private set; }
+        public ICommand SaveFilterCommand { get; private set; }
+        public ICommand CancelCommand { get; private set; }
+
         #endregion
 
         private void CreateCommands()
@@ -151,13 +148,63 @@ namespace FilteredOutputWindowVSX
 
             AddNewFilter= new RelayCommand(() =>
             {
+                var filter = new StringFilterContainer { Name = "new item", Filter = new StringFilterItem { } };
+                EditingFilter = filter;
+            });
+            SaveFilterCommand = new RelayCommand(() =>
+            {
+                var existingFilter = Filters.SingleOrDefault(z => z.Id == EditingFilter.Id);
+                if(existingFilter!=null)
+                {
+                    existingFilter.Name = this.EditingFilter.Name;
+                    existingFilter.Filter = this.EditingFilter.Filter;
+                    this.CurrentFilter = existingFilter;
+                }
+                else
+                {
+                    this.Filters.Add(EditingFilter.ShallowCopy());
+                }
+                this.EditingFilter = null;
+                UpdateSettings();
+            });
 
+            CancelCommand = new RelayCommand(() =>
+            {
+                this.EditingFilter = null;
+            });
+            EditFilter = new RelayCommand(() =>
+            {
+              EditingFilter = CurrentFilter.ShallowCopy();
+            });
+            DeleteFilter = new RelayCommand(() =>
+            {
+                this.Filters.Remove(this.CurrentFilter);
+                UpdateSettings();
             });
         }
+        private void UpdateSettings()
+        {
+            var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(Filters.ToArray());
+            Properties.Settings.Default.Filters = jsonString;
+            Properties.Settings.Default.Save();
 
+        }
+        private StringFilterContainer[] GetSettings()
+        {
+            try
+            {
+                var jsonString = Properties.Settings.Default.Filters;
+                return string.IsNullOrEmpty(jsonString) ? new StringFilterContainer[0] : Newtonsoft.Json.JsonConvert.DeserializeObject<StringFilterContainer[]>(jsonString);
+            }
+            catch(Exception ex)
+            {
+
+                return new StringFilterContainer[0];
+            }
+
+        }
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {
-            if (string.IsNullOrEmpty(Tags)) return;
             if (pPane.Name != "Debug") return;
 
             try
@@ -166,7 +213,7 @@ namespace FilteredOutputWindowVSX
 
                 _oldText = _currentText;
 
-                AddToOutput(ProcessString(newText, Tags));
+                AddToOutput(ProcessString(newText, CurrentFilter?.Filter?.Expression));
             }
             catch (Exception ex)
             {
@@ -181,27 +228,15 @@ namespace FilteredOutputWindowVSX
             return pPane.TextDocument.Selection.Text;
         }
 
-        private IEnumerable<string> ProcessString(string input, string tags)
+        private IEnumerable<string> ProcessString(string input, Expression<Func<string,bool>> filter)
         {
             var textLines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
                                        .Where(a => !string.IsNullOrEmpty(a));
 
-            foreach (var line in textLines)
-            {
-                foreach (var tag in _tagsArray)
-                {
-                    if (line.StartsWith(tag))
-                    {
-                        yield return line.Replace(tag.TrimStart(), "");
-                    }
-                }
-            }
+            return filter != null? textLines.Where(filter.Compile()) : textLines;
+           
         }
 
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        #endregion
+      
     }
 }

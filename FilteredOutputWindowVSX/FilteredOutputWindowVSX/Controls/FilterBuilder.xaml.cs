@@ -1,4 +1,6 @@
-﻿using FilteredOutputWindowVSX.ViewModels;
+﻿using FilteredOutputWindowVSX.Models;
+using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace FilteredOutputWindowVSX.Controls
@@ -11,12 +13,7 @@ namespace FilteredOutputWindowVSX.Controls
         public FilterBuilder()
         {
             InitializeComponent();
-            this.DataContext = new FilterBuilderViewModel();
         }
-
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-
-        }
+      
     }
 }
