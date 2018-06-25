@@ -6,11 +6,13 @@
              Background="{DynamicResource VsBrush.Window}"
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d"
+             xmlns:controls="clr-namespace:FilteredOutputWindowVSX.Controls"
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="300" d:DesignWidth="500"
              xmlns:tools="clr-namespace:FilteredOutputWindowVSX.Tools"
              Name="MyToolWindow">
     <UserControl.Resources>
+        <tools:NullToHiddenConverter x:Key="NullToHiddenConverter"/>
         <tools:BoolToVisConverter x:Key="BoolToVisibility"/>
         <tools:RevertBoolConverter x:Key="RevertBool"/>
         <s:Boolean x:Key="True">True</s:Boolean>
@@ -24,39 +26,48 @@
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                    <Button MaxHeight="50" 
-                            Command="{Binding StartRecording}"
-                            Name="StartListeningButton" 
-                            Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource False}}">
-                        <!--<Image Source="Resources/starticon.png" ></Image>--> Start
+                  
+                    
+                    <Label>Filter</Label>
+                    <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding CurrentFilter}" Width="200" DisplayMemberPath="Name"></ComboBox>
+                    <Button Height="25" Name="AddNewFilter" 
+                            Command="{Binding AddNewFilter}"
+                            >
+                        Add
+                        <!--<Image Source="Resources/add.png" >
+                        </Image>-->
                     </Button>
-                    <Button MaxHeight="50" 
-                            Command="{Binding StopRecording}"
-                            Name="StopListeningButton" 
-                            Visibility="{Binding IsRecording, Converter={StaticResource BoolToVisibility}, ConverterParameter={StaticResource True}}" >
-                        <!--<Image Source="Resources/stopicon.png" ></Image>--> Stop
+                    <Button Height="25" Name="EditFilter" 
+                            Command="{Binding EditFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
+                            >
+                        Edit
+                        <!--<Image Source="Resources/pencil.png" >
+                        </Image>-->
                     </Button>
-                    <Button Name="CleanButton" 
+                    <Button Height="25" Name="DeleteFilter" 
+                            Command="{Binding DeleteFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
+                            >
+                        Delete
+                        <!--<Image Source="Resources/trash.png" >
+                        </Image>-->
+                    </Button>
+                    <Separator/>
+                    <Button ToolTip="Clear" Height="25" Name="CleanButton" 
                             Command="{Binding Clear}"
                             IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
                             >
                         Clear
+                        <!--<Image Source="Resources/clear.png" >
+                        </Image>-->
                     </Button>
+
                     <CheckBox IsChecked="{Binding AutoScroll}"
                               Name="ScrollToEndCheck">
                         Autoscroll
                     </CheckBox>
-                    <Separator/>
-                    <Label>Tags in CSV format:</Label>
-                    <TextBox Name="tagsBox" 
-                             Text="{Binding Tags, UpdateSourceTrigger=PropertyChanged, Delay=500}"
-                             HorizontalAlignment="Stretch" 
-                             Width="200" 
-                             VerticalContentAlignment="Center"
-                             IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
-                             />
                 </ToolBar>
             </ToolBarTray>
+            <controls:FilterBuilder  Height="70" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"></controls:FilterBuilder>
             <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
                 <TextBox Name="Output" Text="{Binding Output}"
                          IsReadOnly="True"

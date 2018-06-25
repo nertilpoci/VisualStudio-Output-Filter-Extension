@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="FilteredOutputWindowVSX.Controls.FilterBuilder"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FilteredOutputWindowVSX.Controls"
+             xmlns:enums="clr-namespace:FilteredOutputWindowVSX.Enums"
+             xmlns:models="clr-namespace:FilteredOutputWindowVSX.Models"
+               xmlns:extensions="clr-namespace:FilteredOutputWindowVSX.Extensions"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type models:StringFilterItem}">
+            <WrapPanel>
+                <ComboBox Height="20" Width="100"  ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:StringOperation}}}" SelectedItem="{Binding Operation }"></ComboBox>
+                <TextBox Width="100" Height="20" Text="{Binding Value}"></TextBox>
+            </WrapPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type models:LogicGate}">
+            <ComboBox Width="50"  Height="20" ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}" SelectedItem="{Binding Gate}" ></ComboBox>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type models:StringFilterContainer}">
+            <WrapPanel>
+                <Label>Name</Label>
+                <TextBox Width="100" Height="20" Text="{Binding Name}"></TextBox>
+                <ContentPresenter Margin="2,0,2,0"  Grid.Row="1" Content="{Binding Filter}"></ContentPresenter>
+                <Button Margin="2,0,2,0"  Height="20" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}},
+                                                         Path=DataContext.SaveFilterCommand}">Save</Button>
+                <Button Margin="2,0,2,0" Height="20" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type UserControl}},
+                                                         Path=DataContext.CancelCommand}" >Cancel</Button>
+            </WrapPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <ContentPresenter Grid.Row="1" Content="{Binding EditingFilter}"></ContentPresenter>
+        
+    </Grid>
+</UserControl>
