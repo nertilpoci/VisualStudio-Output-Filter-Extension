@@ -23,11 +23,11 @@
             <WrapPanel>
                 <Label>Name</Label>
                 <TextBox Width="100" Height="20" Text="{Binding Name}"></TextBox>
-                <ContentPresenter Grid.Row="1" Content="{Binding Filter}"></ContentPresenter>
-                <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                <ContentPresenter Margin="2,0,2,0"  Grid.Row="1" Content="{Binding Filter}"></ContentPresenter>
+                <Button Margin="2,0,2,0"  Height="20" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type UserControl}},
                                                          Path=DataContext.SaveFilterCommand}">Save</Button>
-                <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                <Button Margin="2,0,2,0" Height="20" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type UserControl}},
                                                          Path=DataContext.CancelCommand}" >Cancel</Button>
             </WrapPanel>

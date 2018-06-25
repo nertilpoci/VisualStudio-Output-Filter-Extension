@@ -11,7 +11,7 @@ namespace FilteredOutputWindowVSX.Models
    public class StringFilterContainer:NotifyBase
     {
         public Guid Id { get; set; }
-        public IFilterPart<string> Filter { get; set; }
+        public StringFilterItem Filter { get; set; }
         private string _name;
 
         public string Name { get => _name; set { _name = value; NotifyPropertyChanged(); } }

@@ -25,6 +25,7 @@ namespace FilteredOutputWindowVSX
         private DTE _dte;
         private Events _dteEvents;
         private OutputWindowEvents _documentEvents;
+        private StringFilterContainer _default = new StringFilterContainer() { Name="Everything"};
 
         public FilteredOutputWindowViewModel()
         {
@@ -36,8 +37,11 @@ namespace FilteredOutputWindowVSX
             _documentEvents.PaneUpdated += (e)=> 
             {
                 _currentText = GetPaneText(e);
+                _documentEvents_PaneUpdated(e);
             };
            Filters= new ObservableCollection<StringFilterContainer>(GetSettings());
+            CurrentFilter = Filters.FirstOrDefault();
+
         }
 
         private void SetupEvents()
@@ -52,9 +56,7 @@ namespace FilteredOutputWindowVSX
 
         #region Prop for ViewModel
         private StringBuilder _output = new StringBuilder();
-        private string _tags;
         private bool _autoScroll;
-        private bool _isRecording;
 
         public ObservableCollection<StringFilterContainer> Filters { get; set; }
 
@@ -63,16 +65,7 @@ namespace FilteredOutputWindowVSX
 
         private StringFilterContainer _currentFilter;
         public StringFilterContainer CurrentFilter { get => _currentFilter; set { _currentFilter = value; NotifyPropertyChanged(); } }
-        public bool IsRecording
-        {
-            get => _isRecording;
-            set
-            {
-                if (_isRecording == value) return;
-                _isRecording = value;
-                NotifyPropertyChanged();
-            }
-        }
+   
 
         private void AddToOutput(IEnumerable<string> input)
         {
@@ -111,8 +104,6 @@ namespace FilteredOutputWindowVSX
         public ICommand AddNewFilter { get; private set; }
         public ICommand EditFilter { get; private set; }
         public ICommand DeleteFilter { get; private set; }
-        public ICommand StartRecording { get; private set; }
-        public ICommand StopRecording { get; private set; }
         public ICommand Clear { get; private set; }
         public ICommand SaveFilterCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
@@ -121,17 +112,6 @@ namespace FilteredOutputWindowVSX
 
         private void CreateCommands()
         {
-            StartRecording = new RelayCommand(() =>
-            {
-                _documentEvents.PaneUpdated += _documentEvents_PaneUpdated;
-                IsRecording = true;
-            });
-
-            StopRecording = new RelayCommand(() =>
-            {
-                _documentEvents.PaneUpdated -= _documentEvents_PaneUpdated;
-                IsRecording = false;
-            });
 
             Clear = new RelayCommand(() =>
             {
@@ -163,6 +143,7 @@ namespace FilteredOutputWindowVSX
                 else
                 {
                     this.Filters.Add(EditingFilter.ShallowCopy());
+                    this.CurrentFilter = Filters.LastOrDefault();
                 }
                 this.EditingFilter = null;
                 UpdateSettings();
@@ -179,6 +160,8 @@ namespace FilteredOutputWindowVSX
             DeleteFilter = new RelayCommand(() =>
             {
                 this.Filters.Remove(this.CurrentFilter);
+                this.CurrentFilter = null;
+                this.EditFilter = null;
                 UpdateSettings();
             });
         }
