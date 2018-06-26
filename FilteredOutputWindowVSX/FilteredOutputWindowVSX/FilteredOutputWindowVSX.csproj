@@ -58,6 +58,7 @@
       <DependentUpon>FilterBuilder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
+    <Compile Include="Converters\PictureConverter.cs" />
     <Compile Include="Enums\Operators.cs" />
     <Compile Include="Enums\LogicalGate.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtensions.cs" />
@@ -67,6 +68,7 @@
       <DependentUpon>FilteredOutputWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="FilteredOutputWindowPackage.cs" />
+    <Compile Include="ViewModels\Design\DesignStringFilterContainer.cs" />
     <Compile Include="Models\StringfilterContainer.cs" />
     <Compile Include="Tools\NullToHiddenConverter.cs" />
     <Compile Include="Tools\NullToVisibleConverter.cs" />
@@ -106,11 +108,12 @@
       <SubType>Designer</SubType>
     </VSCTCompile>
     <Content Include="Resources\add.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\clear.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\FilteredOutputWindowPackage.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -129,7 +132,8 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\pencil.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -142,7 +146,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\trash.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="stylesheet.css" />
   </ItemGroup>

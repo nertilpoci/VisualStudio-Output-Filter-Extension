@@ -7,11 +7,13 @@
              Foreground="{DynamicResource VsBrush.WindowText}"
              mc:Ignorable="d"
              xmlns:controls="clr-namespace:FilteredOutputWindowVSX.Controls"
+             xmlns:converters="clr-namespace:FilteredOutputWindowVSX.Converters"
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="300" d:DesignWidth="500"
              xmlns:tools="clr-namespace:FilteredOutputWindowVSX.Tools"
              Name="MyToolWindow">
     <UserControl.Resources>
+        <converters:PictureConverter x:Key="PicConverter"/>
         <tools:NullToHiddenConverter x:Key="NullToHiddenConverter"/>
         <tools:BoolToVisConverter x:Key="BoolToVisibility"/>
         <tools:RevertBoolConverter x:Key="RevertBool"/>
@@ -30,42 +32,38 @@
                     <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding CurrentFilter}" Width="200" DisplayMemberPath="Name"></ComboBox>
                     <Button Height="25" Name="AddNewFilter" 
                             Command="{Binding AddNewFilter}"
+                            ToolTip="Add"
                             >
-                        Add
-                        <!--<Image Source="Resources/add.png" >
-                        </Image>-->
+                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" />
                     </Button>
                     <Button Height="25" Name="EditFilter" 
                             Command="{Binding EditFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
+                            ToolTip="Edit"
                             >
-                        Edit
-                        <!--<Image Source="Resources/pencil.png" >
-                        </Image>-->
+                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='pencil.png'}" />
                     </Button>
                     <Button Height="25" Name="DeleteFilter" 
                             Command="{Binding DeleteFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
+                            ToolTip="Delete"
                             >
-                        Delete
-                        <!--<Image Source="Resources/trash.png" >
-                        </Image>-->
+                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='trash.png'}" />
                     </Button>
                     <Separator/>
                     <Button ToolTip="Clear" Height="25" Name="CleanButton" 
                             Command="{Binding Clear}"
                             IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
                             >
-                        Clear
-                        <!--<Image Source="Resources/clear.png" >
-                        </Image>-->
+                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='clear.png'}" />
                     </Button>
-
                     <CheckBox IsChecked="{Binding AutoScroll}"
                               Name="ScrollToEndCheck">
                         Autoscroll
                     </CheckBox>
                 </ToolBar>
             </ToolBarTray>
-            <controls:FilterBuilder  Height="70" DockPanel.Dock="Top" HorizontalAlignment="Stretch" Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"></controls:FilterBuilder>
+            <controls:FilterBuilder  DockPanel.Dock="Top" 
+                                     HorizontalAlignment="Stretch"
+                                     Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
             <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
                 <TextBox Name="Output" Text="{Binding Output}"
                          IsReadOnly="True"
@@ -73,7 +71,7 @@
                          VerticalAlignment="Stretch"
                          Padding="10"
                          />
-                         <!--Foreground="White"-->
+                <!--Foreground="White"-->
             </ScrollViewer>
         </DockPanel>
     </Grid>
