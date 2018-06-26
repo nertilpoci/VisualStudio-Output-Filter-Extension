@@ -8,22 +8,27 @@
              xmlns:models="clr-namespace:FilteredOutputWindowVSX.Models"
                xmlns:extensions="clr-namespace:FilteredOutputWindowVSX.Extensions"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="LightGray">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type models:StringFilterItem}">
             <WrapPanel>
-                <ComboBox Height="20" Width="100"  ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:StringOperation}}}" SelectedItem="{Binding Operation }"></ComboBox>
-                <TextBox Width="100" Height="20" Text="{Binding Value}"></TextBox>
+                <ComboBox Height="20" Width="100"  
+                          ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:StringOperation}}}"
+                          SelectedItem="{Binding Operation }"/>
+                <TextBox Width="100" Height="20" Text="{Binding Value}"/>
             </WrapPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type models:LogicGate}">
-            <ComboBox Width="50"  Height="20" ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}" SelectedItem="{Binding Gate}" ></ComboBox>
+            <ComboBox Width="50"  Height="20" 
+                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}"
+                      SelectedItem="{Binding Gate}" ></ComboBox>
         </DataTemplate>
         <DataTemplate DataType="{x:Type models:StringFilterContainer}">
             <WrapPanel>
                 <Label>Name</Label>
-                <TextBox Width="100" Height="20" Text="{Binding Name}"></TextBox>
-                <ContentPresenter Margin="2,0,2,0"  Grid.Row="1" Content="{Binding Filter}"></ContentPresenter>
+                <TextBox Width="100" Height="20" Text="{Binding Name}"/>
+                <ContentPresenter Margin="2,0,2,0"  Grid.Row="1" Content="{Binding Filter}"/>
                 <Button Margin="2,0,2,0"  Height="20" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type UserControl}},
                                                          Path=DataContext.SaveFilterCommand}">Save</Button>
@@ -35,11 +40,10 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <ContentPresenter Grid.Row="1" Content="{Binding EditingFilter}"></ContentPresenter>
-        
+        <ContentPresenter Grid.Row="1" Content="{Binding EditingFilter}"/>
     </Grid>
 </UserControl>

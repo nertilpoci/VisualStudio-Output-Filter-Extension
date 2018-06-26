@@ -12,6 +12,5 @@ namespace FilteredOutputWindowVSX.Interface
     {
         [JsonIgnore]
         Expression<Func<TValue, bool>> Expression { get; }
-
     }
 }

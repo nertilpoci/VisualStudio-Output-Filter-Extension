@@ -15,9 +15,8 @@ namespace FilteredOutputWindowVSX.Models
         public Expression<Func<string, bool>> Expression => BuildExpression();
         private Expression<Func<string,bool>> BuildExpression()
         {
-            
-
             var predicate = PredicateBuilder.True<string>();
+
             switch (Operation)
             {
                 case StringOperation.Contains:
@@ -37,7 +36,5 @@ namespace FilteredOutputWindowVSX.Models
             }
             return predicate;
         }
-
-      
     }
 }

@@ -20,12 +20,12 @@ using System.Linq.Expressions;
 
 namespace FilteredOutputWindowVSX
 {
-    public class FilteredOutputWindowViewModel :NotifyBase
+    public class FilteredOutputWindowViewModel : NotifyBase
     {
         private DTE _dte;
         private Events _dteEvents;
         private OutputWindowEvents _documentEvents;
-        private StringFilterContainer _default = new StringFilterContainer() { Name="Everything"};
+        private StringFilterContainer _default = new StringFilterContainer() { Name = "Everything" };
 
         public FilteredOutputWindowViewModel()
         {
@@ -34,12 +34,13 @@ namespace FilteredOutputWindowVSX
 
             AutoScroll = Properties.Settings.Default.AutoScroll;
 
-            _documentEvents.PaneUpdated += (e)=> 
+            _documentEvents.PaneUpdated += (e) =>
             {
                 _currentText = GetPaneText(e);
                 _documentEvents_PaneUpdated(e);
             };
-           Filters= new ObservableCollection<StringFilterContainer>(GetSettings());
+
+            Filters = new ObservableCollection<StringFilterContainer>(GetSettings());
             CurrentFilter = Filters.FirstOrDefault();
 
         }
@@ -65,7 +66,7 @@ namespace FilteredOutputWindowVSX
 
         private StringFilterContainer _currentFilter;
         public StringFilterContainer CurrentFilter { get => _currentFilter; set { _currentFilter = value; NotifyPropertyChanged(); } }
-   
+
 
         private void AddToOutput(IEnumerable<string> input)
         {
@@ -75,7 +76,6 @@ namespace FilteredOutputWindowVSX
             }
             NotifyPropertyChanged(nameof(Output));
         }
-
         public string Output
         {
             get => _output.ToString();
@@ -86,7 +86,6 @@ namespace FilteredOutputWindowVSX
             }
         }
 
-      
         public bool AutoScroll
         {
             get => _autoScroll;
@@ -100,19 +99,16 @@ namespace FilteredOutputWindowVSX
                 Properties.Settings.Default.Save();
             }
         }
-        
         public ICommand AddNewFilter { get; private set; }
         public ICommand EditFilter { get; private set; }
         public ICommand DeleteFilter { get; private set; }
         public ICommand Clear { get; private set; }
         public ICommand SaveFilterCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
-
         #endregion
 
         private void CreateCommands()
         {
-
             Clear = new RelayCommand(() =>
             {
                 _oldText = string.Empty;
@@ -120,21 +116,25 @@ namespace FilteredOutputWindowVSX
                 NotifyPropertyChanged(nameof(Output));
 
                 IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+
                 Guid debugPaneGuid = VSConstants.GUID_OutWindowDebugPane;
-                IVsOutputWindowPane pane;
-                outWindow.GetPane(ref debugPaneGuid, out pane);
+
+                outWindow.GetPane(ref debugPaneGuid, out IVsOutputWindowPane pane);
+
                 pane.Clear();
             });
 
-            AddNewFilter= new RelayCommand(() =>
+            AddNewFilter = new RelayCommand(() =>
             {
-                var filter = new StringFilterContainer { Name = "new item", Filter = new StringFilterItem { } };
-                EditingFilter = filter;
+                 var filter = new StringFilterContainer { Name = "new item", Filter = new StringFilterItem { } };
+
+                 EditingFilter = filter;
             });
+
             SaveFilterCommand = new RelayCommand(() =>
             {
                 var existingFilter = Filters.SingleOrDefault(z => z.Id == EditingFilter.Id);
-                if(existingFilter!=null)
+                if (existingFilter != null)
                 {
                     existingFilter.Name = this.EditingFilter.Name;
                     existingFilter.Filter = this.EditingFilter.Filter;
@@ -153,10 +153,12 @@ namespace FilteredOutputWindowVSX
             {
                 this.EditingFilter = null;
             });
+
             EditFilter = new RelayCommand(() =>
             {
-              EditingFilter = CurrentFilter.ShallowCopy();
+                EditingFilter = CurrentFilter.ShallowCopy();
             });
+
             DeleteFilter = new RelayCommand(() =>
             {
                 this.Filters.Remove(this.CurrentFilter);
@@ -172,20 +174,23 @@ namespace FilteredOutputWindowVSX
             Properties.Settings.Default.Save();
 
         }
+
         private StringFilterContainer[] GetSettings()
         {
             try
             {
                 var jsonString = Properties.Settings.Default.Filters;
-                return string.IsNullOrEmpty(jsonString) ? new StringFilterContainer[0] : Newtonsoft.Json.JsonConvert.DeserializeObject<StringFilterContainer[]>(jsonString);
-            }
-            catch(Exception ex)
-            {
 
+                return string.IsNullOrEmpty(jsonString) ? 
+                    new StringFilterContainer[0] :
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<StringFilterContainer[]>(jsonString);
+            }
+            catch (Exception ex)
+            {
                 return new StringFilterContainer[0];
             }
-
         }
+
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {
             if (pPane.Name != "Debug") return;
@@ -211,15 +216,12 @@ namespace FilteredOutputWindowVSX
             return pPane.TextDocument.Selection.Text;
         }
 
-        private IEnumerable<string> ProcessString(string input, Expression<Func<string,bool>> filter)
+        private IEnumerable<string> ProcessString(string input, Expression<Func<string, bool>> filter)
         {
             var textLines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
                                        .Where(a => !string.IsNullOrEmpty(a));
 
-            return filter != null? textLines.Where(filter.Compile()) : textLines;
-           
+            return filter != null ? textLines.Where(filter.Compile()) : textLines;
         }
-
-      
     }
 }

@@ -26,8 +26,6 @@
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
-                  
-                    
                     <Label>Filter</Label>
                     <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding CurrentFilter}" Width="200" DisplayMemberPath="Name"></ComboBox>
                     <Button Height="25" Name="AddNewFilter" 

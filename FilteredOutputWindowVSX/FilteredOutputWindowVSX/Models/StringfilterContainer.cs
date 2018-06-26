@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FilteredOutputWindowVSX.Models
 {
-   public class StringFilterContainer:NotifyBase
+    public class StringFilterContainer : NotifyBase
     {
         public Guid Id { get; set; }
         public StringFilterItem Filter { get; set; }

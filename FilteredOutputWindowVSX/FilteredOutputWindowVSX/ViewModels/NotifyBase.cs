@@ -10,10 +10,9 @@ namespace FilteredOutputWindowVSX.ViewModels
 {
    public abstract class NotifyBase: INotifyPropertyChanged
     {
-        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
+
         protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        #endregion
     }
 }
