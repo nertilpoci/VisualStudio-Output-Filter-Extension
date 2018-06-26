@@ -6,44 +6,49 @@
              xmlns:local="clr-namespace:FilteredOutputWindowVSX.Controls"
              xmlns:enums="clr-namespace:FilteredOutputWindowVSX.Enums"
              xmlns:models="clr-namespace:FilteredOutputWindowVSX.Models"
-               xmlns:extensions="clr-namespace:FilteredOutputWindowVSX.Extensions"
+             xmlns:extensions="clr-namespace:FilteredOutputWindowVSX.Extensions"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="LightGray">
+             Background="LightGray"
+             >
     <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Width" Value="100"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Height" Value="20"/>
+        </Style>
         <DataTemplate DataType="{x:Type models:StringFilterItem}">
             <WrapPanel>
-                <ComboBox Height="20" Width="100"  
+                <ComboBox Width="100" 
                           ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:StringOperation}}}"
                           SelectedItem="{Binding Operation }"/>
-                <TextBox Width="100" Height="20" Text="{Binding Value}"/>
+                <TextBox Text="{Binding Value}"/>
             </WrapPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type models:LogicGate}">
-            <ComboBox Width="50"  Height="20" 
+            <ComboBox Width="50"  
                       ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}"
-                      SelectedItem="{Binding Gate}" ></ComboBox>
+                      SelectedItem="{Binding Gate}"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type models:StringFilterContainer}">
             <WrapPanel>
                 <Label>Name</Label>
-                <TextBox Width="100" Height="20" Text="{Binding Name}"/>
-                <ContentPresenter Margin="2,0,2,0"  Grid.Row="1" Content="{Binding Filter}"/>
-                <Button Margin="2,0,2,0"  Height="20" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                                                         AncestorType={x:Type UserControl}},
-                                                         Path=DataContext.SaveFilterCommand}">Save</Button>
-                <Button Margin="2,0,2,0" Height="20" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                                                         AncestorType={x:Type UserControl}},
-                                                         Path=DataContext.CancelCommand}" >Cancel</Button>
+                <TextBox Text="{Binding Name}"/>
+                <ContentPresenter Content="{Binding Filter}"/>
+                <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                        AncestorType={x:Type UserControl}}, Path=DataContext.SaveFilterCommand}" >Save</Button>
+                <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                        AncestorType={x:Type UserControl}}, Path=DataContext.CancelCommand}" >Cancel</Button>
             </WrapPanel>
         </DataTemplate>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <ContentPresenter Grid.Row="1" Content="{Binding EditingFilter}"/>
-    </Grid>
+        <ContentPresenter Content="{Binding EditingFilter}"/>
 </UserControl>
