@@ -68,6 +68,7 @@
       <DependentUpon>FilteredOutputWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="FilteredOutputWindowPackage.cs" />
+    <Compile Include="Converters\AbstractConverter.cs" />
     <Compile Include="ViewModels\Design\DesignStringFilterContainer.cs" />
     <Compile Include="Models\StringfilterContainer.cs" />
     <Compile Include="Tools\NullToHiddenConverter.cs" />
