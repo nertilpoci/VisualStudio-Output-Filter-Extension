@@ -21,51 +21,50 @@
         <s:Boolean x:Key="False">False</s:Boolean>
     </UserControl.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <DockPanel>
-            <ToolBarTray DockPanel.Dock="Top">
-                <ToolBar>
-                    <Label>Filter</Label>
-                    <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding CurrentFilter}" Width="200" DisplayMemberPath="Name"></ComboBox>
-                    <Button Height="25" Name="AddNewFilter" 
+        <DockPanel >
+  
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="30" >
+                    <Label Foreground="{DynamicResource VsBrush.WindowText}">Filter</Label>
+                <ComboBox ItemsSource="{Binding Filters}" 
+                            Background="{DynamicResource VsBrush.Window}"
+             Foreground="{DynamicResource VsBrush.WindowText}"
+                          SelectedItem="{Binding CurrentFilter}" Width="200" DisplayMemberPath="Name"></ComboBox>
+                <Button Height="25" Name="AddNewFilter" Background="{DynamicResource VsBrush.Window}"
                             Command="{Binding AddNewFilter}"
                             ToolTip="Add"
                             >
                         <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" />
                     </Button>
-                    <Button Height="25" Name="EditFilter" 
+                <Button Height="25" Name="EditFilter"  Background="{DynamicResource VsBrush.Window}"
                             Command="{Binding EditFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
                             ToolTip="Edit"
                             >
                         <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='pencil.png'}" />
                     </Button>
-                    <Button Height="25" Name="DeleteFilter" 
+                <Button Height="25" Name="DeleteFilter" Background="{DynamicResource VsBrush.Window}"
                             Command="{Binding DeleteFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
                             ToolTip="Delete"
                             >
                         <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='trash.png'}" />
                     </Button>
                     <Separator/>
-                    <Button ToolTip="Clear" Height="25" Name="CleanButton" 
+                <Button ToolTip="Clear" Height="25" Name="CleanButton" Background="{DynamicResource VsBrush.Window}"
                             Command="{Binding Clear}"
                             IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
                             >
                         <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='clear.png'}" />
                     </Button>
-                    <CheckBox IsChecked="{Binding AutoScroll}"
+                <CheckBox IsChecked="{Binding AutoScroll}" Margin="8" Background="{DynamicResource VsBrush.Window}"  Foreground="{DynamicResource VsBrush.WindowText}"
                               Name="ScrollToEndCheck">
                         Autoscroll
                     </CheckBox>
-                </ToolBar>
-            </ToolBarTray>
+                </StackPanel>
             <controls:FilterBuilder  DockPanel.Dock="Top" 
                                      HorizontalAlignment="Stretch"
                                      Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
-            <ScrollViewer Name="Scroller" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
-                <TextBox Name="Output" Text="{Binding Output}"
+            <ScrollViewer Name="Scroller"  Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
+                <TextBox Name="Output"  Background="{DynamicResource VsBrush.Window}" BorderBrush="Transparent"
+             Foreground="{DynamicResource VsBrush.WindowText}" Text="{Binding Output}"
                          IsReadOnly="True"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
