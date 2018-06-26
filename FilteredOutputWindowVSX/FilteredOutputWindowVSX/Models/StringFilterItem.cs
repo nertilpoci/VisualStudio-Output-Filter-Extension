@@ -1,5 +1,4 @@
 ﻿using FilteredOutputWindowVSX.Enums;
-using FilteredOutputWindowVSX.Interface;
 using Newtonsoft.Json;
 using System;
 using System.Linq.Expressions;
@@ -7,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace FilteredOutputWindowVSX.Models
 {
-    public class StringFilterItem : IFilterPart<string>
+    public class StringFilterItem
     {
         public string Value { get; set; }
         public StringOperation Operation { get; set; }
@@ -26,7 +25,7 @@ namespace FilteredOutputWindowVSX.Models
                     predicate = predicate.And(input => input.StartsWith(Value, StringComparison.InvariantCultureIgnoreCase));
                     break;
                 case StringOperation.EndsWith:
-                    predicate = predicate.Or(input => input.EndsWith(Value, StringComparison.InvariantCultureIgnoreCase));
+                    predicate = predicate.And(input => input.EndsWith(Value, StringComparison.InvariantCultureIgnoreCase));
                     break;
                 case StringOperation.Regex:
                     predicate = predicate.And(input => Regex.IsMatch(input, Value,RegexOptions.Multiline));

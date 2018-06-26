@@ -75,7 +75,6 @@
     <Compile Include="Tools\NullToVisibleConverter.cs" />
     <Compile Include="ViewModels\FilteredOutputWindowViewModel.cs" />
     <Compile Include="Helpers\PredicateBuilder.cs" />
-    <Compile Include="Interface\IFilterPart.cs" />
     <Compile Include="Models\LogicGate.cs" />
     <Compile Include="Models\StringFilterItem.cs" />
     <Compile Include="Models\Operator.cs" />
