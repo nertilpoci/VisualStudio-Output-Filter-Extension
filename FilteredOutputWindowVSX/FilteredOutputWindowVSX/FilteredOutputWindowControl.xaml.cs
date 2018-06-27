@@ -12,10 +12,10 @@
 
     public partial class FilteredOutputWindowControl : UserControl
     {
+      
         public FilteredOutputWindowControl()
         {
             this.InitializeComponent();
-
             Output.SizeChanged += (s, e) =>
             {
                 if (Scroller.Tag is bool autoScroll && autoScroll)

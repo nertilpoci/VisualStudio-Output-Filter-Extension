@@ -16,5 +16,10 @@ namespace FilteredOutputWindowVSX.Models
             Id = Guid.NewGuid();
             return (StringFilterContainer)MemberwiseClone();
         }
+
+        public override string ToString()
+        {
+            return $"{Name} {Filter.Operation.ToString() } {Filter.Value}";
+        }
     }
 }

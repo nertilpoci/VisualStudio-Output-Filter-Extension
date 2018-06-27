@@ -1,4 +1,5 @@
 ﻿using FilteredOutputWindowVSX.Enums;
+using FilteredOutputWindowVSX.ViewModels;
 using Newtonsoft.Json;
 using System;
 using System.Linq.Expressions;
@@ -6,9 +7,12 @@ using System.Text.RegularExpressions;
 
 namespace FilteredOutputWindowVSX.Models
 {
-    public class StringFilterItem
+    public class StringFilterItem:NotifyBase
     {
-        public string Value { get; set; }
+        private string _value;
+
+        public string Value { get => _value; set { _value = value; NotifyPropertyChanged(); } }
+
         public StringOperation Operation { get; set; }
         [JsonIgnore]
         public Expression<Func<string, bool>> Expression => BuildExpression();
@@ -34,6 +38,10 @@ namespace FilteredOutputWindowVSX.Models
                     break;
             }
             return predicate;
+        }
+        public override string ToString()
+        {
+            return $"{Operation.ToString() } {Value}";
         }
     }
 }

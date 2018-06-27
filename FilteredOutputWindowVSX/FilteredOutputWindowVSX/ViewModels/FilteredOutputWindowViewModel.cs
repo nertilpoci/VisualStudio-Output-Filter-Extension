@@ -65,11 +65,12 @@ namespace FilteredOutputWindowVSX
         public StringFilterContainer EditingFilter { get => _editingFilter; set { _editingFilter = value; NotifyPropertyChanged(); } }
 
         private StringFilterContainer _currentFilter;
-        public StringFilterContainer CurrentFilter { get => _currentFilter; set { _currentFilter = value; NotifyPropertyChanged(); } }
+        public StringFilterContainer CurrentFilter { get => _currentFilter; set { _currentFilter = value; NotifyPropertyChanged(); UpdateOutput(); } }
 
 
-        private void AddToOutput(IEnumerable<string> input)
+        private void AddToOutput(IEnumerable<string> input,bool reset=false)
         {
+            if (reset) _output.Clear();
             foreach (var i in input)
             {
                 _output.AppendLine(i);
@@ -126,25 +127,20 @@ namespace FilteredOutputWindowVSX
 
             AddNewFilter = new RelayCommand(() =>
             {
-                 var filter = new StringFilterContainer { Name = "new item", Filter = new StringFilterItem { } };
+                var filter = new StringFilterContainer { Name = "new item", Filter = new StringFilterItem { } };
 
-                 EditingFilter = filter;
+                EditingFilter = filter;
             });
 
             SaveFilterCommand = new RelayCommand(() =>
             {
                 var existingFilter = Filters.SingleOrDefault(z => z.Id == EditingFilter.Id);
-                if (existingFilter != null)
-                {
-                    existingFilter.Name = this.EditingFilter.Name;
-                    existingFilter.Filter = this.EditingFilter.Filter;
-                    this.CurrentFilter = existingFilter;
-                }
-                else
-                {
-                    this.Filters.Add(EditingFilter.ShallowCopy());
-                    this.CurrentFilter = Filters.LastOrDefault();
-                }
+
+                if (existingFilter != null) Filters.Remove(existingFilter);
+
+                this.Filters.Insert(0,EditingFilter.ShallowCopy());
+                this.CurrentFilter = Filters.FirstOrDefault();
+
                 this.EditingFilter = null;
                 UpdateSettings();
             });
@@ -181,7 +177,7 @@ namespace FilteredOutputWindowVSX
             {
                 var jsonString = Properties.Settings.Default.Filters;
 
-                return string.IsNullOrEmpty(jsonString) ? 
+                return string.IsNullOrEmpty(jsonString) ?
                     new StringFilterContainer[0] :
                     Newtonsoft.Json.JsonConvert.DeserializeObject<StringFilterContainer[]>(jsonString);
             }
@@ -208,7 +204,10 @@ namespace FilteredOutputWindowVSX
 
             }
         }
-
+        private void UpdateOutput()
+        {
+            AddToOutput(ProcessString(_currentText, CurrentFilter?.Filter?.Expression),true);
+        }
         private static string GetPaneText(OutputWindowPane pPane)
         {
             pPane.TextDocument.Selection.SelectAll();
