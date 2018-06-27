@@ -16,11 +16,6 @@
         public FilteredOutputWindowControl()
         {
             this.InitializeComponent();
-            if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
-            {
-                var filter = new Models.StringFilterContainer { Name = "Filter1", Id = Guid.NewGuid() };
-                this.DataContext = new FilteredOutputWindowViewModel { Filters = new System.Collections.ObjectModel.ObservableCollection<Models.StringFilterContainer> { filter }, EditingFilter = filter };
-            }
             Output.SizeChanged += (s, e) =>
             {
                 if (Scroller.Tag is bool autoScroll && autoScroll)

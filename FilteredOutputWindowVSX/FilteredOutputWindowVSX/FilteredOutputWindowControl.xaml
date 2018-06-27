@@ -20,6 +20,9 @@
         <tools:RevertBoolConverter x:Key="RevertBool"/>
         <s:Boolean x:Key="True">True</s:Boolean>
         <s:Boolean x:Key="False">False</s:Boolean>
+        <Style TargetType="Image">
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+        </Style>
         <Style TargetType="{x:Type Button}">
             <Setter Property="BorderBrush" Value="Transparent"></Setter>
             <Setter Property="TextBlock.FontFamily"
@@ -72,49 +75,67 @@
     </UserControl.Resources>
     <Grid>
         <DockPanel >
+            <Border DockPanel.Dock="Top"  BorderBrush="{DynamicResource VsBrush.WindowText}" Background="{DynamicResource VsBrush.Window}" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect/>
+                </Border.Effect>
+                <StackPanel>
+                    <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
 
-            <StackPanel Margin="5" DockPanel.Dock="Top" Orientation="Horizontal" Height="25" >
-                <TextBlock  VerticalAlignment="Center" Margin="5,2,5,2">Filter</TextBlock>
-                <ComboBox Margin="5,2,5,2" ItemsSource="{Binding Filters}"  Background="{DynamicResource VsBrush.Window}" BorderBrush="Transparent"
+                        <TextBlock  VerticalAlignment="Center" Margin="5,2,5,2">Filter</TextBlock>
+
+                        <ComboBox Margin="5,2,5,2" ItemsSource="{Binding Filters}"  Background="{DynamicResource VsBrush.Window}" BorderBrush="Transparent"
              Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
-                          SelectedItem="{Binding CurrentFilter}" Width="200" DisplayMemberPath="Name">
-                 
-                </ComboBox>
-                <Button  Name="AddNewFilter"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                         ToolTip="{Binding}"   SelectedItem="{Binding CurrentFilter}" Width="200" >
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Name}"/>
+                                        <TextBlock TextTrimming="CharacterEllipsis"  Text="{Binding Filter}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Button  Name="AddNewFilter"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                             Command="{Binding AddNewFilter}"
                             ToolTip="Add"
                             >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" />
-                </Button>
-                <Button  Name="EditFilter"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                            <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" Stretch="Fill" />
+                        </Button>
+                        <Button  Name="EditFilter"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                             Command="{Binding EditFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
                             ToolTip="Edit"
                             >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='edit.png'}" />
-                </Button>
-                <Button  Name="DeleteFilter"  Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                            <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='edit.png'}" />
+                        </Button>
+                        <Button  Name="DeleteFilter"  Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                             Command="{Binding DeleteFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
                             ToolTip="Delete"
                             >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
-                </Button>
-                <Separator/>
-                <Button ToolTip="Clear" Name="CleanButton"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                            <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
+                        </Button>
+                        <Separator/>
+                        <Button ToolTip="Clear" Name="CleanButton"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                             Command="{Binding Clear}"
                             IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
                             >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='clear.png'}" />
-                </Button>
-                <CheckBox IsChecked="{Binding AutoScroll}" VerticalAlignment="Center"  Style="{StaticResource {x:Static ToolBar.CheckBoxStyleKey}}"  Foreground="{DynamicResource VsBrush.WindowText}"
+                            <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='clear.png'}" />
+                        </Button>
+                        <CheckBox IsChecked="{Binding AutoScroll}" VerticalAlignment="Center"  Style="{StaticResource {x:Static ToolBar.CheckBoxStyleKey}}"  Foreground="{DynamicResource VsBrush.WindowText}"
                               Name="ScrollToEndCheck">
-                    Autoscroll
-                </CheckBox>
-            </StackPanel>
-            <controls:FilterBuilder  DockPanel.Dock="Top" 
+                            Autoscroll
+                        </CheckBox>
+                    </StackPanel>
+                    <controls:FilterBuilder Margin="10,10,10,10"
                                      HorizontalAlignment="Stretch"
                                      Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
+                </StackPanel>
+            </Border>
+         
+          
             <ScrollViewer Name="Scroller" BorderBrush="Transparent" Background="Transparent" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
-                <TextBox Name="Output"  BorderBrush="Transparent"  Text="{Binding Output}"
+                <TextBox Name="Output"  BorderBrush="Transparent"  Text="{Binding Output}"   Foreground="{DynamicResource VsBrush.WindowText}"
                          IsReadOnly="True"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
