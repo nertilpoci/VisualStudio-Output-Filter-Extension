@@ -4,14 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FilteredOutputWindowVSX.Controls"
+                          xmlns:converters="clr-namespace:FilteredOutputWindowVSX.Converters"
+
              xmlns:enums="clr-namespace:FilteredOutputWindowVSX.Enums"
              xmlns:models="clr-namespace:FilteredOutputWindowVSX.Models"
              xmlns:extensions="clr-namespace:FilteredOutputWindowVSX.Extensions"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"  Background="Transparent"
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="LightGray"
              >
     <UserControl.Resources>
+        <converters:PictureConverter x:Key="PicConverter"/>
+
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="3"/>
             <Setter Property="Height" Value="20"/>
@@ -40,13 +43,17 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type models:StringFilterContainer}">
             <WrapPanel>
-                <Label>Name</Label>
+                <TextBlock VerticalAlignment="Center">Name</TextBlock>
                 <TextBox Text="{Binding Name}"/>
                 <ContentPresenter Content="{Binding Filter}"/>
                 <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                        AncestorType={x:Type UserControl}}, Path=DataContext.SaveFilterCommand}" >Save</Button>
+                        AncestorType={x:Type UserControl}}, Path=DataContext.SaveFilterCommand}" >
+                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='accept.png'}" />
+                </Button>
                 <Button Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType={x:Type UserControl}}, Path=DataContext.CancelCommand}" >Cancel</Button>
+                        AncestorType={x:Type UserControl}}, Path=DataContext.CancelCommand}"  >
+                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='cancel.png'}" />
+                </Button>
             </WrapPanel>
         </DataTemplate>
     </UserControl.Resources>
