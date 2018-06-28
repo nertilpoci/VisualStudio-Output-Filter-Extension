@@ -22,5 +22,17 @@
                     Scroller.ScrollToEnd();
             };
         }
+
+        private void SelectFilterButton_Click(object sender, RoutedEventArgs e) => ToggleSetPopup();
+        private void ItemsControl_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => ToggleSetPopup(false);
+        private void SelectFilterButton_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e) => ToggleSetPopup(SelectionPopup.IsMouseOver);
+
+        private void ToggleSetPopup(bool? set = null)
+        {
+            if (set == null)
+                SelectionPopup.IsOpen = !SelectionPopup.IsOpen;
+            else
+                SelectionPopup.IsOpen = (bool)set;
+        }
     }
 }

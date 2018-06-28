@@ -1,5 +1,4 @@
-﻿
-             <UserControl x:Class="FilteredOutputWindowVSX.FilteredOutputWindowControl"
+﻿<UserControl x:Class="FilteredOutputWindowVSX.FilteredOutputWindowControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -66,7 +65,6 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition SharedSizeGroup="ComboBoxButton" Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                           
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -75,65 +73,100 @@
     </UserControl.Resources>
     <Grid>
         <DockPanel >
-            <Border DockPanel.Dock="Top"  BorderBrush="{DynamicResource VsBrush.WindowText}" Background="{DynamicResource VsBrush.Window}" BorderThickness="1">
-                <Border.Effect>
+            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource VsBrush.WindowText}" 
+                    Background="{DynamicResource VsBrush.WindowFrame}" BorderThickness="0 0 0 0">
+                <!--<Border.Effect> -> just why 
                     <DropShadowEffect/>
-                </Border.Effect>
+                </Border.Effect>-->
                 <StackPanel>
                     <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
-
                         <TextBlock  VerticalAlignment="Center" Margin="5,2,5,2">Filter</TextBlock>
+                        <Button Content="Select filter" 
+                                Foreground="{DynamicResource VsBrush.ButtonText}"
+                                Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Name="SelectFilterButton" 
+                                Click="SelectFilterButton_Click" 
+                                MouseLeave="SelectFilterButton_MouseLeave"/>
+                        <Popup IsOpen="False"
+                               Name="SelectionPopup"
+                               PlacementTarget="{Binding ElementName=SelectFilterButton}"
+                               PopupAnimation="Slide"
+                               AllowsTransparency="True">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
+                                <ItemsControl ItemsSource="{Binding Filters}" MouseLeave="ItemsControl_MouseLeave" 
+                                              Background="{DynamicResource VsBrush.WindowFrame}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="2">
+                                                <DockPanel LastChildFill="True">
+                                                    <CheckBox DockPanel.Dock="Left" Margin="2" VerticalAlignment="Center"/>
+                                                    <StackPanel DockPanel.Dock="Right" Margin="2">
+                                                        <TextBlock Text="{Binding Name}"/>
+                                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Filter}"/>
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Popup>
+                        <!--<ComboBox Margin="5,2,5,2" ItemsSource="{Binding Filters}"  Background="{DynamicResource VsBrush.Window}" BorderBrush="Transparent"
+                                      Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                                      ToolTip="{Binding}"   SelectedItem="{Binding CurrentFilter}" Width="200" >
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel LastChildFill="True">
+                                            <CheckBox DockPanel.Dock="Left"></CheckBox>
+                                            <StackPanel DockPanel.Dock="Right">
+                                                <TextBlock Text="{Binding Name}"/>
+                                                <TextBlock TextTrimming="CharacterEllipsis"  Text="{Binding Filter}"/>
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>-->
 
-                        <ComboBox Margin="5,2,5,2" ItemsSource="{Binding Filters}"  Background="{DynamicResource VsBrush.Window}" BorderBrush="Transparent"
-             Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
-                         ToolTip="{Binding}"   SelectedItem="{Binding CurrentFilter}" Width="200" >
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel >
-                                        <TextBlock Text="{Binding Name}"/>
-                                        <TextBlock TextTrimming="CharacterEllipsis"  Text="{Binding Filter}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-
-                        <Button  Name="AddNewFilter"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                            Command="{Binding AddNewFilter}"
-                            ToolTip="Add"
-                            >
+                        <Button  Name="AddNewFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Command="{Binding AddNewFilter}"
+                                ToolTip="Add"
+                                >
                             <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" Stretch="Fill" />
                         </Button>
-                        <Button  Name="EditFilter"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                            Command="{Binding EditFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
-                            ToolTip="Edit"
-                            >
+
+                        <Button  Name="EditFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Command="{Binding EditFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
+                                ToolTip="Edit"
+                                >
                             <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='edit.png'}" />
                         </Button>
-                        <Button  Name="DeleteFilter"  Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                            Command="{Binding DeleteFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
-                            ToolTip="Delete"
-                            >
+
+                        <Button  Name="DeleteFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Command="{Binding DeleteFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
+                                ToolTip="Delete"
+                                >
                             <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
                         </Button>
-                        <Separator/>
-                        <Button ToolTip="Clear" Name="CleanButton"   Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                            Command="{Binding Clear}"
-                            IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
-                            >
+
+                        <Button ToolTip="Clear" Name="CleanButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Command="{Binding Clear}"
+                                IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
+                                >
                             <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='clear.png'}" />
                         </Button>
+
                         <CheckBox IsChecked="{Binding AutoScroll}" VerticalAlignment="Center"  Style="{StaticResource {x:Static ToolBar.CheckBoxStyleKey}}"  Foreground="{DynamicResource VsBrush.WindowText}"
-                              Name="ScrollToEndCheck">
+                                      Name="ScrollToEndCheck">
                             Autoscroll
                         </CheckBox>
+
                     </StackPanel>
                     <controls:FilterBuilder Margin="10,10,10,10"
                                      HorizontalAlignment="Stretch"
                                      Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
                 </StackPanel>
             </Border>
-         
-          
+
             <ScrollViewer Name="Scroller" BorderBrush="Transparent" Background="Transparent" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
                 <TextBox Name="Output"  BorderBrush="Transparent"  Text="{Binding Output}"   Foreground="{DynamicResource VsBrush.WindowText}"
                          IsReadOnly="True"
@@ -141,7 +174,6 @@
                          VerticalAlignment="Stretch"
                          Padding="10"
                          />
-                <!--Foreground="White"-->
             </ScrollViewer>
         </DockPanel>
     </Grid>
