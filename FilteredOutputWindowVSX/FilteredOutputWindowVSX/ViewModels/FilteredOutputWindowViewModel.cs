@@ -17,10 +17,12 @@ using FilteredOutputWindowVSX.Models;
 using System.Collections.ObjectModel;
 using FilteredOutputWindowVSX.ViewModels;
 using System.Linq.Expressions;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight;
 
 namespace FilteredOutputWindowVSX
 {
-    public class FilteredOutputWindowViewModel : NotifyBase
+    public class FilteredOutputWindowViewModel : ViewModelBase
     {
         private DTE _dte;
         private Events _dteEvents;
@@ -40,9 +42,11 @@ namespace FilteredOutputWindowVSX
                 _documentEvents_PaneUpdated(e);
             };
 
-            Filters = new ObservableCollection<StringFilterContainer>(GetSettings());
-            CurrentFilter = Filters.FirstOrDefault();
-
+            Filters = new TrulyObservableCollection<StringFilterContainer>(GetSettings());
+            Filters.CollectionChanged += (s,e) => {
+                RaisePropertyChanged(nameof(FilterButtonName));
+                UpdateOutput();
+            };
         }
 
         private void SetupEvents()
@@ -59,13 +63,11 @@ namespace FilteredOutputWindowVSX
         private StringBuilder _output = new StringBuilder();
         private bool _autoScroll;
 
-        public ObservableCollection<StringFilterContainer> Filters { get; set; }
+        public TrulyObservableCollection<StringFilterContainer> Filters { get; set; }
 
         private StringFilterContainer _editingFilter;
-        public StringFilterContainer EditingFilter { get => _editingFilter; set { _editingFilter = value; NotifyPropertyChanged(); } }
+        public StringFilterContainer EditingFilter { get => _editingFilter; set { _editingFilter = value; RaisePropertyChanged(); } }
 
-        private StringFilterContainer _currentFilter;
-        public StringFilterContainer CurrentFilter { get => _currentFilter; set { _currentFilter = value; NotifyPropertyChanged(); UpdateOutput(); } }
 
 
         private void AddToOutput(IEnumerable<string> input,bool reset=false)
@@ -75,7 +77,7 @@ namespace FilteredOutputWindowVSX
             {
                 _output.AppendLine(i);
             }
-            NotifyPropertyChanged(nameof(Output));
+            RaisePropertyChanged(nameof(Output));
         }
         public string Output
         {
@@ -83,7 +85,7 @@ namespace FilteredOutputWindowVSX
             set
             {
                 _output.AppendLine(value);
-                NotifyPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -94,15 +96,15 @@ namespace FilteredOutputWindowVSX
             {
                 if (_autoScroll == value) return;
                 _autoScroll = value;
-                NotifyPropertyChanged();
+                RaisePropertyChanged();
 
                 Properties.Settings.Default.AutoScroll = value;
                 Properties.Settings.Default.Save();
             }
         }
         public ICommand AddNewFilter { get; private set; }
-        public ICommand EditFilter { get; private set; }
-        public ICommand DeleteFilter { get; private set; }
+        public RelayCommand<StringFilterContainer> EditFilter { get; private set; }
+        public RelayCommand<StringFilterContainer> DeleteFilter { get; private set; }
         public ICommand Clear { get; private set; }
         public ICommand SaveFilterCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
@@ -113,8 +115,9 @@ namespace FilteredOutputWindowVSX
             Clear = new RelayCommand(() =>
             {
                 _oldText = string.Empty;
+                _currentText = "";
                 _output.Clear();
-                NotifyPropertyChanged(nameof(Output));
+                RaisePropertyChanged(nameof(Output));
 
                 IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
 
@@ -134,13 +137,13 @@ namespace FilteredOutputWindowVSX
 
             SaveFilterCommand = new RelayCommand(() =>
             {
+                //remove existing item if exist or ToString override value won't be updated in the ui
                 var existingFilter = Filters.SingleOrDefault(z => z.Id == EditingFilter.Id);
 
                 if (existingFilter != null) Filters.Remove(existingFilter);
 
                 this.Filters.Insert(0,EditingFilter.ShallowCopy());
-                this.CurrentFilter = Filters.FirstOrDefault();
-
+                     
                 this.EditingFilter = null;
                 UpdateSettings();
             });
@@ -150,15 +153,15 @@ namespace FilteredOutputWindowVSX
                 this.EditingFilter = null;
             });
 
-            EditFilter = new RelayCommand(() =>
+
+            EditFilter = new RelayCommand<StringFilterContainer>((filter) =>
             {
-                EditingFilter = CurrentFilter.ShallowCopy();
+                EditingFilter = filter.ShallowCopy();
             });
 
-            DeleteFilter = new RelayCommand(() =>
+            DeleteFilter = new RelayCommand<StringFilterContainer>((filter) =>
             {
-                this.Filters.Remove(this.CurrentFilter);
-                this.CurrentFilter = null;
+                this.Filters.Remove(filter);
                 this.EditFilter = null;
                 UpdateSettings();
             });
@@ -186,7 +189,11 @@ namespace FilteredOutputWindowVSX
                 return new StringFilterContainer[0];
             }
         }
+        public IEnumerable<StringFilterContainer> SelectedFilters => this.Filters.Where(z => z.IsSelected);
 
+        public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
+        public Expression<Func<string, bool>> Expression =>!SelectedFilters.Any()? PredicateBuilder.True<string>(): SelectedFilters.Select(z => z.Filter.Expression).Aggregate((currentExpression, nextExpression) => PredicateBuilder.Or<string>(currentExpression, nextExpression));
+        public bool CanDelete => SelectedFilters.Any();
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {
             if (pPane.Name != "Debug") return;
@@ -197,7 +204,7 @@ namespace FilteredOutputWindowVSX
 
                 _oldText = _currentText;
 
-                AddToOutput(ProcessString(newText, CurrentFilter?.Filter?.Expression));
+                AddToOutput(ProcessString(newText, Expression));
             }
             catch (Exception ex)
             {
@@ -206,7 +213,7 @@ namespace FilteredOutputWindowVSX
         }
         private void UpdateOutput()
         {
-            AddToOutput(ProcessString(_currentText, CurrentFilter?.Filter?.Expression),true);
+            AddToOutput(ProcessString(_currentText, Expression),true);
         }
         private static string GetPaneText(OutputWindowPane pPane)
         {
@@ -220,7 +227,9 @@ namespace FilteredOutputWindowVSX
             var textLines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
                                        .Where(a => !string.IsNullOrEmpty(a));
 
-            return filter != null ? textLines.Where(filter.Compile()) : textLines;
+            var filterFunc = filter.Compile();
+
+            return filter != null ? textLines.Where(filterFunc) : textLines;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FilteredOutputWindowVSX.Enums;
 using FilteredOutputWindowVSX.ViewModels;
+using GalaSoft.MvvmLight;
 using Newtonsoft.Json;
 using System;
 using System.Linq.Expressions;
@@ -7,11 +8,11 @@ using System.Text.RegularExpressions;
 
 namespace FilteredOutputWindowVSX.Models
 {
-    public class StringFilterItem:NotifyBase
+    public class StringFilterItem:ObservableObject
     {
         private string _value;
 
-        public string Value { get => _value; set { _value = value; NotifyPropertyChanged(); } }
+        public string Value { get => _value??string.Empty; set { _value = value; RaisePropertyChanged(); } }
 
         public StringOperation Operation { get; set; }
         [JsonIgnore]

@@ -45,12 +45,6 @@
                 <TextBox Text="{Binding Value}"/>
             </WrapPanel>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type models:LogicGate}">
-            <ComboBox Width="50"  Background="{DynamicResource VsBrush.Window}" BorderBrush="Transparent"
-             Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
-                      ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}"
-                      SelectedItem="{Binding Gate}"/>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type models:StringFilterContainer}">
             <WrapPanel Margin="5" >
                 <TextBlock VerticalAlignment="Center">Name</TextBlock>

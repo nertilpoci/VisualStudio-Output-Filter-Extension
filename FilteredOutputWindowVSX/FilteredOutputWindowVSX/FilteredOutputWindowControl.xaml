@@ -81,7 +81,7 @@
                 <StackPanel>
                     <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
                         <TextBlock  VerticalAlignment="Center" Margin="5,2,5,2">Filter</TextBlock>
-                        <Button Content="Select filter" 
+                        <Button Content="{Binding FilterButtonName}" 
                                 Foreground="{DynamicResource VsBrush.ButtonText}"
                                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Name="SelectFilterButton" 
@@ -99,10 +99,22 @@
                                         <DataTemplate>
                                             <Border Margin="2">
                                                 <DockPanel LastChildFill="True">
-                                                    <CheckBox DockPanel.Dock="Left" Margin="2" VerticalAlignment="Center"/>
+                                                    <CheckBox IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" Margin="2" VerticalAlignment="Center"/>
                                                     <StackPanel DockPanel.Dock="Right" Margin="2">
-                                                        <TextBlock Text="{Binding Name}"/>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}"/>
+                                                            <Button Height="20"  Margin="5,0,5,0" Name="EditFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                                     Command="{Binding Path=DataContext.EditFilter, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" ToolTip="Edit" CommandParameter="{Binding}"
+                                                                             >
+                                                                <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='edit.png'}" />
+                                                            </Button>
+                                                            <Button Height="20"  Name="DeleteFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                             Command="{Binding Path=DataContext.DeleteFilter, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"   ToolTip="Delete"  CommandParameter="{Binding}">
+                                                                <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
+                                                            </Button>
+                                                        </StackPanel>
                                                         <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Filter}"/>
+                                                        
                                                     </StackPanel>
                                                 </DockPanel>
                                             </Border>
@@ -134,19 +146,9 @@
                             <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" Stretch="Fill" />
                         </Button>
 
-                        <Button  Name="EditFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                Command="{Binding EditFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
-                                ToolTip="Edit"
-                                >
-                            <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='edit.png'}" />
-                        </Button>
+                       
 
-                        <Button  Name="DeleteFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                Command="{Binding DeleteFilter}" Visibility="{Binding CurrentFilter, Converter={StaticResource NullToHiddenConverter}}"
-                                ToolTip="Delete"
-                                >
-                            <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
-                        </Button>
+                       
 
                         <Button ToolTip="Clear" Name="CleanButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Command="{Binding Clear}"
@@ -155,7 +157,7 @@
                             <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='clear.png'}" />
                         </Button>
 
-                        <CheckBox IsChecked="{Binding AutoScroll}" VerticalAlignment="Center"  Style="{StaticResource {x:Static ToolBar.CheckBoxStyleKey}}"  Foreground="{DynamicResource VsBrush.WindowText}"
+                        <CheckBox ToolTip="Scroll to bottom when new content is added" IsChecked="{Binding AutoScroll}" VerticalAlignment="Center"  Style="{StaticResource {x:Static ToolBar.CheckBoxStyleKey}}"  Foreground="{DynamicResource VsBrush.WindowText}"
                                       Name="ScrollToEndCheck">
                             Autoscroll
                         </CheckBox>
