@@ -43,7 +43,8 @@ namespace FilteredOutputWindowVSX
             };
 
             Filters = new TrulyObservableCollection<StringFilterContainer>(GetSettings());
-            Filters.CollectionChanged += (s,e) => {
+            Filters.CollectionChanged += (s, e) =>
+            {
                 RaisePropertyChanged(nameof(FilterButtonName));
                 UpdateOutput();
             };
@@ -66,11 +67,9 @@ namespace FilteredOutputWindowVSX
         public TrulyObservableCollection<StringFilterContainer> Filters { get; set; }
 
         private StringFilterContainer _editingFilter;
-        public StringFilterContainer EditingFilter { get => _editingFilter; set { _editingFilter = value; RaisePropertyChanged(); } }
+        public StringFilterContainer EditingFilter { get => _editingFilter; set => Set(ref _editingFilter, value); }
 
-
-
-        private void AddToOutput(IEnumerable<string> input,bool reset=false)
+        private void AddToOutput(IEnumerable<string> input, bool reset = false)
         {
             if (reset) _output.Clear();
             foreach (var i in input)
@@ -79,6 +78,7 @@ namespace FilteredOutputWindowVSX
             }
             RaisePropertyChanged(nameof(Output));
         }
+
         public string Output
         {
             get => _output.ToString();
@@ -94,9 +94,7 @@ namespace FilteredOutputWindowVSX
             get => _autoScroll;
             set
             {
-                if (_autoScroll == value) return;
-                _autoScroll = value;
-                RaisePropertyChanged();
+                Set(ref _autoScroll, value);
 
                 Properties.Settings.Default.AutoScroll = value;
                 Properties.Settings.Default.Save();
@@ -142,8 +140,8 @@ namespace FilteredOutputWindowVSX
 
                 if (existingFilter != null) Filters.Remove(existingFilter);
 
-                this.Filters.Insert(0,EditingFilter.ShallowCopy());
-                     
+                this.Filters.Insert(0, EditingFilter.ShallowCopy());
+
                 this.EditingFilter = null;
                 UpdateSettings();
             });
@@ -166,12 +164,12 @@ namespace FilteredOutputWindowVSX
                 UpdateSettings();
             });
         }
+
         private void UpdateSettings()
         {
             var jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(Filters.ToArray());
             Properties.Settings.Default.Filters = jsonString;
             Properties.Settings.Default.Save();
-
         }
 
         private StringFilterContainer[] GetSettings()
@@ -184,15 +182,17 @@ namespace FilteredOutputWindowVSX
                     new StringFilterContainer[0] :
                     Newtonsoft.Json.JsonConvert.DeserializeObject<StringFilterContainer[]>(jsonString);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new StringFilterContainer[0];
             }
         }
+
         public IEnumerable<StringFilterContainer> SelectedFilters => this.Filters.Where(z => z.IsSelected);
 
         public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
-        public Expression<Func<string, bool>> Expression =>!SelectedFilters.Any()? PredicateBuilder.True<string>(): SelectedFilters.Select(z => z.Filter.Expression).Aggregate((currentExpression, nextExpression) => PredicateBuilder.Or<string>(currentExpression, nextExpression));
+        public Expression<Func<string, bool>> Expression => !SelectedFilters.Any() ? PredicateBuilder.True<string>() :
+            SelectedFilters.Select(z => z.Filter.Expression).Aggregate((currentExpression, nextExpression) => PredicateBuilder.Or<string>(currentExpression, nextExpression));
         public bool CanDelete => SelectedFilters.Any();
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {
@@ -206,15 +206,17 @@ namespace FilteredOutputWindowVSX
 
                 AddToOutput(ProcessString(newText, Expression));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
         }
+
         private void UpdateOutput()
         {
-            AddToOutput(ProcessString(_currentText, Expression),true);
+            AddToOutput(ProcessString(_currentText, Expression), true);
         }
+
         private static string GetPaneText(OutputWindowPane pPane)
         {
             pPane.TextDocument.Selection.SelectAll();
