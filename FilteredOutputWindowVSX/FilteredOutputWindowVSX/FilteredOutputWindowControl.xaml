@@ -80,7 +80,7 @@
                 </Border.Effect>-->
                 <StackPanel>
                     <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
-                        <TextBlock  VerticalAlignment="Center" Margin="5,2,5,2">Filter</TextBlock>
+                        <TextBlock  VerticalAlignment="Center" Margin="5 2">Filter</TextBlock>
                         <Button Content="{Binding FilterButtonName}" 
                                 Foreground="{DynamicResource VsBrush.ButtonText}"
                                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
@@ -97,14 +97,15 @@
                                               Background="{DynamicResource VsBrush.WindowFrame}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Margin="2">
+                                            <Border Margin="5">
                                                 <DockPanel LastChildFill="True">
                                                     <CheckBox IsChecked="{Binding IsSelected}" DockPanel.Dock="Left" Margin="2" VerticalAlignment="Center"/>
                                                     <StackPanel DockPanel.Dock="Right" Margin="2">
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="{Binding Name}"/>
-                                                            <Button Height="20"  Margin="5,0,5,0" Name="EditFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                                                     Command="{Binding Path=DataContext.EditFilter, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" ToolTip="Edit" CommandParameter="{Binding}"
+                                                            <Button Height="20"  Margin="5 0" Name="EditFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                                    Command="{Binding Path=DataContext.EditFilter, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" ToolTip="Edit" CommandParameter="{Binding}"
+                                                                    Click="EditFilter_Click"
                                                                              >
                                                                 <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='edit.png'}" />
                                                             </Button>
@@ -123,32 +124,12 @@
                                 </ItemsControl>
                             </ScrollViewer>
                         </Popup>
-                        <!--<ComboBox Margin="5,2,5,2" ItemsSource="{Binding Filters}"  Background="{DynamicResource VsBrush.Window}" BorderBrush="Transparent"
-                                      Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
-                                      ToolTip="{Binding}"   SelectedItem="{Binding CurrentFilter}" Width="200" >
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <DockPanel LastChildFill="True">
-                                            <CheckBox DockPanel.Dock="Left"></CheckBox>
-                                            <StackPanel DockPanel.Dock="Right">
-                                                <TextBlock Text="{Binding Name}"/>
-                                                <TextBlock TextTrimming="CharacterEllipsis"  Text="{Binding Filter}"/>
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>-->
-
                         <Button  Name="AddNewFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Command="{Binding AddNewFilter}"
                                 ToolTip="Add"
                                 >
                             <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" Stretch="Fill" />
                         </Button>
-
-                       
-
-                       
 
                         <Button ToolTip="Clear" Name="CleanButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Command="{Binding Clear}"

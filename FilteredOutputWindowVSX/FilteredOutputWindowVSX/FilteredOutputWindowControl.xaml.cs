@@ -12,7 +12,7 @@
 
     public partial class FilteredOutputWindowControl : UserControl
     {
-      
+
         public FilteredOutputWindowControl()
         {
             this.InitializeComponent();
@@ -34,5 +34,7 @@
             else
                 SelectionPopup.IsOpen = (bool)set;
         }
+
+        private void EditFilter_Click(object sender, RoutedEventArgs e) => ToggleSetPopup(false);
     }
 }
