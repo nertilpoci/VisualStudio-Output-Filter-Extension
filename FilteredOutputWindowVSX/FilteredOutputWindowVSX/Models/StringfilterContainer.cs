@@ -10,9 +10,9 @@ namespace FilteredOutputWindowVSX.Models
         public StringFilterItem Filter { get; set; }
         private string _name;
         private bool _isSelected;
-        public string Name { get => _name; set { _name = value; RaisePropertyChanged(); } }
+        public string Name { get => _name; set => Set(ref _name, value); }
 
-        public bool IsSelected { get => _isSelected; set { _isSelected = value; RaisePropertyChanged();  } }
+        public bool IsSelected { get => _isSelected; set => Set(ref _isSelected, value); }
 
         public StringFilterContainer ShallowCopy()
         {
