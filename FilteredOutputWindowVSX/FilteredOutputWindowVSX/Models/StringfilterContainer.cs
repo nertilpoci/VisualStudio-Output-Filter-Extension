@@ -9,8 +9,11 @@ namespace FilteredOutputWindowVSX.Models
         public Guid Id { get; set; }
         public StringFilterItem Filter { get; set; }
         private string _name;
+        private string _color;
         private bool _isSelected;
         public string Name { get => _name; set => Set(ref _name, value); }
+        public string Color { get => _color; set => Set(ref _color, value); }
+
 
         public bool IsSelected { get => _isSelected; set => Set(ref _isSelected, value); }
 

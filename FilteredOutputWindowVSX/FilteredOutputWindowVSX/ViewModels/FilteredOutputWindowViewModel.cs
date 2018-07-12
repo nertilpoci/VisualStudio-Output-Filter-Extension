@@ -19,6 +19,9 @@ using FilteredOutputWindowVSX.ViewModels;
 using System.Linq.Expressions;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight;
+using FilteredOutputWindowVSX.Enums;
+using System.Windows.Media;
+using System.Reflection;
 
 namespace FilteredOutputWindowVSX
 {
@@ -35,7 +38,7 @@ namespace FilteredOutputWindowVSX
             CreateCommands();
 
             AutoScroll = Properties.Settings.Default.AutoScroll;
-
+            FilterMode = (LogicalGate)Properties.Settings.Default.FilterMode;
             _documentEvents.PaneUpdated += (e) =>
             {
                 _currentText = GetPaneText(e);
@@ -48,6 +51,7 @@ namespace FilteredOutputWindowVSX
                 RaisePropertyChanged(nameof(FilterButtonName));
                 UpdateOutput();
             };
+           ColorList=new ObservableCollection<string>( typeof(Colors).GetProperties().Select(z=>z.Name));
         }
 
         private void SetupEvents()
@@ -59,7 +63,7 @@ namespace FilteredOutputWindowVSX
 
         private string _oldText = string.Empty;
         private string _currentText = string.Empty;
-
+        public LogicalGate _filterMode;
         #region Prop for ViewModel
         private StringBuilder _output = new StringBuilder();
         private bool _autoScroll;
@@ -68,7 +72,7 @@ namespace FilteredOutputWindowVSX
 
         private StringFilterContainer _editingFilter;
         public StringFilterContainer EditingFilter { get => _editingFilter; set => Set(ref _editingFilter, value); }
-
+        private ObservableCollection<string> _colorList;
         private void AddToOutput(IEnumerable<string> input, bool reset = false)
         {
             if (reset) _output.Clear();
@@ -79,6 +83,7 @@ namespace FilteredOutputWindowVSX
             RaisePropertyChanged(nameof(Output));
         }
 
+        public LogicalGate FilterMode { get => _filterMode; set { Set(ref _filterMode, value); Properties.Settings.Default.FilterMode = (int)value; Properties.Settings.Default.Save(); UpdateOutput(); } }
         public string Output
         {
             get => _output.ToString();
@@ -128,7 +133,7 @@ namespace FilteredOutputWindowVSX
 
             AddNewFilter = new RelayCommand(() =>
             {
-                var filter = new StringFilterContainer { Name = "new item", Filter = new StringFilterItem { } };
+                var filter = new StringFilterContainer { Name = "Filter nr " + (Filters.Count + 1), Filter = new StringFilterItem { } };
 
                 EditingFilter = filter;
             });
@@ -188,11 +193,11 @@ namespace FilteredOutputWindowVSX
             }
         }
 
-        public IEnumerable<StringFilterContainer> SelectedFilters => this.Filters.Where(z => z.IsSelected);
-
+        public IEnumerable<StringFilterContainer> SelectedFilters => this.Filters?.Where(z => z.IsSelected)??Enumerable.Empty<StringFilterContainer>();
+        public ObservableCollection<string> ColorList { get => _colorList; set => Set(ref _colorList, value); }
         public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
         public Expression<Func<string, bool>> Expression => !SelectedFilters.Any() ? PredicateBuilder.True<string>() :
-            SelectedFilters.Select(z => z.Filter.Expression).Aggregate((currentExpression, nextExpression) => PredicateBuilder.Or<string>(currentExpression, nextExpression));
+            SelectedFilters.Select(z => z.Filter.Expression).Aggregate((currentExpression, nextExpression) => FilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression));
         public bool CanDelete => SelectedFilters.Any();
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {
