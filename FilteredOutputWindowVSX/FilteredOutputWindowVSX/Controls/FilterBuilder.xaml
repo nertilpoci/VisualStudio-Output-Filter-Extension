@@ -45,13 +45,15 @@
                 <TextBox Text="{Binding Value}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.AccentBorderBrushKey}}"/>
             </WrapPanel>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type models:StringFilterContainer}">
-            <WrapPanel Margin="5" >
-                <TextBlock VerticalAlignment="Center">Name</TextBlock>
-                <TextBox Text="{Binding Name}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.AccentBorderBrushKey}}" />
-                <ContentPresenter Content="{Binding Filter}"/>
+        <DataTemplate DataType="{x:Type models:FilterContainer}">
+            <StackPanel Margin="5" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center">Name</TextBlock>
+                    <TextBox Text="{Binding Name}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.AccentBorderBrushKey}}" />
+                </StackPanel>
+              
                 <!--TODO show when the richtextbox is added to complement the functionality-->
-                <ComboBox Visibility="Hidden" SelectedItem="{Binding Color}" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                <!--<ComboBox Visibility="Hidden" SelectedItem="{Binding Color}" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                         AncestorType={x:Type UserControl}}, Path=DataContext.ColorList}"  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
              Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}">
                     <ComboBox.ItemTemplate>
@@ -62,17 +64,70 @@
                             </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
-                </ComboBox>
-                <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                </ComboBox>-->
+                <ItemsControl ItemsSource="{Binding Rows}" >
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentPresenter Content="{Binding}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <StackPanel>
+                    <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                        AncestorType={x:Type UserControl}}, Path=DataContext.AddFilterRow}" >
+                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='Add.png'}" />
+                    </Button>
+                    <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                         AncestorType={x:Type UserControl}}, Path=DataContext.SaveFilterCommand}" >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='accept.png'}" />
+                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='accept.png'}" />
+                    </Button>
+                    <Button ToolTip="Cancel" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                        AncestorType={x:Type UserControl}}, Path=DataContext.CancelCommand}"   >
+                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='cancel.png'}" />
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type models:FilterRow}">
+            <WrapPanel Margin="5" >
+                <ComboBox Width="100" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
+             Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                          ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}"
+                          SelectedItem="{Binding LogicalGate }"/>
+                <ItemsControl ItemsSource="{Binding Filters}" >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                            <ContentPresenter Content="{Binding}"/>
+                        </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                </ItemsControl>
+           
+                <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                        AncestorType={x:Type UserControl}}, Path=DataContext.AddFilterRowItem}" CommandParameter="{Binding}" >
+                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" />
                 </Button>
                 <Button ToolTip="Cancel" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType={x:Type UserControl}}, Path=DataContext.CancelCommand}"   >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='cancel.png'}" />
+                        AncestorType={x:Type UserControl}}, Path=DataContext.DeleteFilterRowItem}" CommandParameter="{Binding}"  >
+                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
+                </Button>
+                <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                        AncestorType={x:Type UserControl}}, Path=DataContext.DeleteFilterRow}" CommandParameter="{Binding}" >
+                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
                 </Button>
             </WrapPanel>
         </DataTemplate>
     </UserControl.Resources>
-        <ContentPresenter Content="{Binding EditingFilter}"/>
+    <ContentPresenter Content="{Binding FilterContainer}"/>
 </UserControl>

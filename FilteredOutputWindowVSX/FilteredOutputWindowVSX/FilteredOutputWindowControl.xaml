@@ -164,7 +164,7 @@
                     </StackPanel>
                     <controls:FilterBuilder Margin="10,10,10,10"
                                      HorizontalAlignment="Stretch"
-                                     Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
+                                     Visibility="{Binding FilterContainer, Converter={StaticResource NullToHiddenConverter}}"/>
                 </StackPanel>
             </Border>
 
