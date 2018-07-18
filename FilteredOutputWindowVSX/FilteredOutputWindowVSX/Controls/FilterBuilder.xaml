@@ -73,16 +73,16 @@
                     </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel/>
+                            <StackPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-
-                <StackPanel>
-                    <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                <Button HorizontalAlignment="Left" ToolTip="Add New Item" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                         AncestorType={x:Type UserControl}}, Path=DataContext.AddFilterRow}" >
-                        <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='Add.png'}" />
-                    </Button>
+                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='Add.png'}" />
+                </Button>
+                <StackPanel Orientation="Horizontal">
+                   
                     <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                         AncestorType={x:Type UserControl}}, Path=DataContext.SaveFilterCommand}" >
                         <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='accept.png'}" />
@@ -95,33 +95,15 @@
             </StackPanel>
         </DataTemplate>
 
+
         <DataTemplate DataType="{x:Type models:FilterRow}">
             <WrapPanel Margin="5" >
                 <ComboBox Width="100" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
              Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                           ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}"
                           SelectedItem="{Binding LogicalGate }"/>
-                <ItemsControl ItemsSource="{Binding Filters}" >
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                            <ContentPresenter Content="{Binding}"/>
-                        </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                </ItemsControl>
-           
-                <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                        AncestorType={x:Type UserControl}}, Path=DataContext.AddFilterRowItem}" CommandParameter="{Binding}" >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" />
-                </Button>
-                <Button ToolTip="Cancel" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
-                        AncestorType={x:Type UserControl}}, Path=DataContext.DeleteFilterRowItem}" CommandParameter="{Binding}"  >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
-                </Button>
+                <ContentPresenter Content="{Binding Filter}"/>
+
                 <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                         AncestorType={x:Type UserControl}}, Path=DataContext.DeleteFilterRow}" CommandParameter="{Binding}" >
                     <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='delete.png'}" />
@@ -129,5 +111,5 @@
             </WrapPanel>
         </DataTemplate>
     </UserControl.Resources>
-    <ContentPresenter Content="{Binding FilterContainer}"/>
+    <ContentPresenter Content="{Binding EditingFilter}"/>
 </UserControl>

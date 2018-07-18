@@ -45,14 +45,13 @@ namespace FilteredOutputWindowVSX
                 _documentEvents_PaneUpdated(e);
             };
 
-            Filters = new TrulyObservableCollection<StringFilterContainer>(GetSettings());
+            Filters = new TrulyObservableCollection<FilterContainer>(GetSettings());
             Filters.CollectionChanged += (s, e) =>
             {
                 RaisePropertyChanged(nameof(FilterButtonName));
                 UpdateOutput();
             };
            ColorList=new ObservableCollection<string>( typeof(Colors).GetProperties().Select(z=>z.Name));
-            FilterContainer = new FilterContainer() { Name="nertil"} ;
         }
 
         private void SetupEvents()
@@ -69,13 +68,10 @@ namespace FilteredOutputWindowVSX
         private StringBuilder _output = new StringBuilder();
         private bool _autoScroll;
 
-        public TrulyObservableCollection<StringFilterContainer> Filters { get; set; }
-        public TrulyObservableCollection<StringFilterContainer> Filters2 { get; set; }
+        public TrulyObservableCollection<FilterContainer> Filters { get; set; }
 
-        private StringFilterContainer _editingFilter;
-        public StringFilterContainer EditingFilter { get => _editingFilter; set => Set(ref _editingFilter, value); }
-        private FilterContainer _filterContainer;
-        public FilterContainer FilterContainer { get => _filterContainer; set => Set(ref _filterContainer, value); }
+           private FilterContainer _editingFilter;
+        public FilterContainer EditingFilter { get => _editingFilter; set => Set(ref _editingFilter, value); }
         private ObservableCollection<string> _colorList;
         private void AddToOutput(IEnumerable<string> input, bool reset = false)
         {
@@ -110,15 +106,13 @@ namespace FilteredOutputWindowVSX
             }
         }
         public ICommand AddNewFilter { get; private set; }
-        public RelayCommand<StringFilterContainer> EditFilter { get; private set; }
-        public RelayCommand<StringFilterContainer> DeleteFilter { get; private set; }
+        public RelayCommand<FilterContainer> EditFilter { get; private set; }
+        public RelayCommand<FilterContainer> DeleteFilter { get; private set; }
         public ICommand Clear { get; private set; }
         public ICommand SaveFilterCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
         public RelayCommand<FilterRow> DeleteFilterRow { get; private set; }
-        public RelayCommand<FilterRow> DeleteFilterRowItem { get; private set; }
         
-        public RelayCommand<FilterRow> AddFilterRowItem { get; private set; }
         public RelayCommand AddFilterRow { get; private set; }
         #endregion
 
@@ -142,7 +136,7 @@ namespace FilteredOutputWindowVSX
 
             AddNewFilter = new RelayCommand(() =>
             {
-                var filter = new StringFilterContainer { Name = "Filter nr " + (Filters.Count + 1), Filter = new StringFilterItem { } };
+                var filter = new FilterContainer { Name = "Filter nr " + (Filters.Count + 1),  Rows=new ObservableCollection<FilterRow>() { new FilterRow { Filter=new StringFilterItem { Value="value" } } } };
 
                 EditingFilter = filter;
             });
@@ -166,12 +160,12 @@ namespace FilteredOutputWindowVSX
             });
 
 
-            EditFilter = new RelayCommand<StringFilterContainer>((filter) =>
+            EditFilter = new RelayCommand<FilterContainer>((filter) =>
             {
                 EditingFilter = filter.ShallowCopy();
             });
 
-            DeleteFilter = new RelayCommand<StringFilterContainer>((filter) =>
+            DeleteFilter = new RelayCommand<FilterContainer>((filter) =>
             {
                 this.Filters.Remove(filter);
                 this.EditFilter = null;
@@ -179,22 +173,12 @@ namespace FilteredOutputWindowVSX
             });
             DeleteFilterRow = new RelayCommand<FilterRow>((row) =>
             {
-                //this.Filters.Remove(row);
-                //this.EditFilter = null;
-                //UpdateSettings();
-            });
-            DeleteFilterRowItem = new RelayCommand<FilterRow>((row) =>
-            {
-                row.Filters.Remove(row.Filters.Last());
-            });
-            AddFilterRowItem = new RelayCommand<FilterRow>((row) =>
-            {
-                row.Filters.Add(new StringFilterItem());
+                EditingFilter.Rows.Remove(row);
             });
             AddFilterRow = new RelayCommand(() =>
             {
              //   LogicalGate = LogicalGate.And, Filters = new ObservableCollection<StringFilterItem>(new List<StringFilterItem> { new StringFilterItem { Value = "test" }, new StringFilterItem { Value = "test2" }
-                FilterContainer.Rows.Add(new FilterRow() { LogicalGate = LogicalGate.And, Filters = new ObservableCollection<StringFilterItem>(new List<StringFilterItem> { new StringFilterItem { Value = "test" }, new StringFilterItem { Value = "test2" } })});
+                EditingFilter.Rows.Add(new FilterRow() { LogicalGate = LogicalGate.And, Filter = new StringFilterItem { Value = "test" } });
             });
         }
         
@@ -206,27 +190,27 @@ namespace FilteredOutputWindowVSX
             Properties.Settings.Default.Save();
         }
 
-        private StringFilterContainer[] GetSettings()
+        private FilterContainer[] GetSettings()
         {
             try
             {
                 var jsonString = Properties.Settings.Default.Filters;
 
                 return string.IsNullOrEmpty(jsonString) ?
-                    new StringFilterContainer[0] :
-                    Newtonsoft.Json.JsonConvert.DeserializeObject<StringFilterContainer[]>(jsonString);
+                    new FilterContainer[0] :
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<FilterContainer[]>(jsonString);
             }
             catch (Exception)
             {
-                return new StringFilterContainer[0];
+                return new FilterContainer[0];
             }
         }
 
-        public IEnumerable<StringFilterContainer> SelectedFilters => this.Filters?.Where(z => z.IsSelected)??Enumerable.Empty<StringFilterContainer>();
+        public IEnumerable<FilterContainer> SelectedFilters => this.Filters?.Where(z => z.IsSelected)??Enumerable.Empty<FilterContainer>();
         public ObservableCollection<string> ColorList { get => _colorList; set => Set(ref _colorList, value); }
         public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
         public Expression<Func<string, bool>> Expression => !SelectedFilters.Any() ? PredicateBuilder.True<string>() :
-            SelectedFilters.Select(z => z.Filter.Expression).Aggregate((currentExpression, nextExpression) => FilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression));
+            SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => FilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression));
         public bool CanDelete => SelectedFilters.Any();
         private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
         {

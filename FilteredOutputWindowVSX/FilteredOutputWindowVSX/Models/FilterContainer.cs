@@ -1,7 +1,11 @@
-﻿using FilteredOutputWindowVSX.ViewModels;
+﻿using FilteredOutputWindowVSX.Enums;
+using FilteredOutputWindowVSX.ViewModels;
 using GalaSoft.MvvmLight;
+using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace FilteredOutputWindowVSX.Models
 {
@@ -20,15 +24,19 @@ namespace FilteredOutputWindowVSX.Models
 
         public bool IsSelected { get => _isSelected; set => Set(ref _isSelected, value); }
 
-        public StringFilterContainer ShallowCopy()
-        {
-            Id = Guid.NewGuid();
-            return (StringFilterContainer)MemberwiseClone();
-        }
+        [JsonIgnore]
+        public Expression<Func<string, bool>> Expression => Rows.Aggregate(PredicateBuilder.True<string>(),(filter, next) => next.LogicalGate==LogicalGate.And? PredicateBuilder.And(filter,next.Filter.Expression): PredicateBuilder.Or(filter, next.Filter.Expression));
 
         public override string ToString()
         {
-            return $"{Name}";
+            //get first row and remove the and/or from the front as it doesnt make sense for first item
+            var firstFilter = Rows.FirstOrDefault()?.Filter;
+            return firstFilter == null?"" : $"{Rows.Skip(1).Aggregate(firstFilter.ToString(),(curr,next)=> $"{curr} {next.LogicalGate.ToString()} {next.Filter.ToString()}")}";
+        }
+        public FilterContainer ShallowCopy()
+        {
+            Id = Guid.NewGuid();
+            return (FilterContainer)MemberwiseClone();
         }
     }
 }
