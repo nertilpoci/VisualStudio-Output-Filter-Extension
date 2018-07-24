@@ -88,28 +88,33 @@
                                 Foreground="{DynamicResource VsBrush.ButtonText}"
                                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                 Name="SelectFilterButton" 
-                                Click="SelectFilterButton_Click" 
-                                MouseLeave="SelectFilterButton_MouseLeave"/>
-                        <Popup IsOpen="False" 
+                                Command="{Binding TogglePopup}"/>
+                    <Popup IsOpen="{Binding SelectionListPopupOpen}" 
                                Name="SelectionPopup"
                                PlacementTarget="{Binding ElementName=SelectFilterButton}"
                                PopupAnimation="Slide"
                                AllowsTransparency="True">
-                        <Border Padding="20" Background="{DynamicResource VsBrush.WindowFrame}">
+                        <Border Padding="20"  Background="{DynamicResource VsBrush.WindowFrame}">
                             <Grid  >
                                 <Grid.RowDefinitions>
                                     <RowDefinition></RowDefinition>
                                     <RowDefinition></RowDefinition>
                                 </Grid.RowDefinitions>
-                                <StackPanel  Orientation="Horizontal">
+                                <StackPanel Margin="0,0,20,0"  Orientation="Horizontal">
                                     <TextBlock  Margin="5">Multi Filter Mode :</TextBlock>
                                     <ComboBox Margin="5" Width="100" SelectedItem="{Binding FilterMode}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
              Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                           ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}"
                          />
                                 </StackPanel>
+                                <Button Width="20" Height="20"  Margin="0,-18,-18,0" Name="closePopup" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Command="{Binding TogglePopup}"
+                                ToolTip="Close"
+                                >
+                                    <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='cancel.png'}" Stretch="Fill" />
+                                </Button>
                                 <ScrollViewer  Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
-                                    <ItemsControl ItemsSource="{Binding Filters}" MouseLeave="ItemsControl_MouseLeave" 
+                                    <ItemsControl ItemsSource="{Binding Filters}" 
                                              >
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -121,7 +126,7 @@
                                                             <TextBlock ToolTip="{Binding}" Text="{Binding Name}"/>
                                                             <Button Height="20"  Margin="5 0" Name="EditFilter" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                                                                     Command="{Binding Path=DataContext.EditFilter, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" ToolTip="Edit" CommandParameter="{Binding}"
-                                                                    Click="EditFilter_Click"
+                                                                   
                                                                              >
                                                                 <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='edit.png'}" />
                                                             </Button>
@@ -159,23 +164,29 @@
                                       Name="ScrollToEndCheck">
                             Autoscroll
                         </CheckBox>
+                    <Button  Name="AboutButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                Command="{Binding ShowAbout}"
+                                ToolTip="Add"
+                                >
+                        <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='about.png'}" Stretch="Fill" />
+                    </Button>
 
-                    </StackPanel>
+                </StackPanel>
                    
             </Border>
 
             <ScrollViewer Name="Scroller" BorderBrush="Transparent" Background="Transparent" Tag="{Binding AutoScroll}" VerticalScrollBarVisibility="Auto">
-                <StackPanel>
-                    <controls:FilterBuilder Margin="10,10,10,10"
+                <DockPanel LastChildFill="True">
+                    <controls:FilterBuilder Margin="10,10,10,10" DockPanel.Dock="Top"
                                      HorizontalAlignment="Stretch"
                                      Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
-                    <TextBox Name="Output"  BorderBrush="Transparent"  Text="{Binding Output}"   Foreground="{DynamicResource VsBrush.WindowText}"
+                    <TextBox Name="Output"   BorderBrush="Transparent"  Text="{Binding Output}"   Foreground="{DynamicResource VsBrush.WindowText}"
                          IsReadOnly="True"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          Padding="10"
                          />
-                </StackPanel>
+                </DockPanel>
             </ScrollViewer>
         </DockPanel>
     </Grid>
