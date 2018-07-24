@@ -94,7 +94,8 @@ namespace FilteredOutputWindowVSX
                 RaisePropertyChanged();
             }
         }
-
+        public bool _selectionListPopupOpen;
+        public bool SelectionListPopupOpen { get { return _selectionListPopupOpen; } set { Set(ref _selectionListPopupOpen, value); } }
         public bool AutoScroll
         {
             get => _autoScroll;
@@ -109,12 +110,14 @@ namespace FilteredOutputWindowVSX
         public ICommand AddNewFilter { get; private set; }
         public RelayCommand<FilterContainer> EditFilter { get; private set; }
         public RelayCommand<FilterContainer> DeleteFilter { get; private set; }
+        public RelayCommand TogglePopup { get; private set; }
         public ICommand Clear { get; private set; }
         public ICommand SaveFilterCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
         public RelayCommand<FilterRow> DeleteFilterRow { get; private set; }
         
         public RelayCommand AddFilterRow { get; private set; }
+        public RelayCommand ShowAbout { get; private set; }
         #endregion
 
         private void CreateCommands()
@@ -180,8 +183,18 @@ namespace FilteredOutputWindowVSX
              //   LogicalGate = LogicalGate.And, Filters = new ObservableCollection<StringFilterItem>(new List<StringFilterItem> { new StringFilterItem { Value = "test" }, new StringFilterItem { Value = "test2" }
                 EditingFilter.Rows.Add(new FilterRow() { LogicalGate = LogicalGate.And, Filter = new StringFilterItem { Value = "test" } });
             });
+            TogglePopup = new RelayCommand(() => {
+
+                SelectionListPopupOpen = !SelectionListPopupOpen;
+            });
+
+            ShowAbout = new RelayCommand(() => {
+
+                Process.Start("http://google.com");
+            });
+
         }
-        
+
 
         private void UpdateSettings()
         {
