@@ -140,7 +140,7 @@ namespace FilteredOutputWindowVSX
 
             AddNewFilter = new RelayCommand(() =>
             {
-                var filter = new FilterContainer { Name = "Filter nr " + (Filters.Count + 1),  Rows=new ObservableCollection<FilterRow>() { new FilterRow { Filter=new StringFilterItem { Value="value" } } } };
+                var filter = new FilterContainer { Id=Guid.NewGuid(), Name = "Filter nr " + (Filters.Count + 1),  Rows=new ObservableCollection<FilterRow>() { new FilterRow { Filter=new StringFilterItem { Value="value" } } } };
 
                 EditingFilter = filter;
             });
@@ -166,6 +166,7 @@ namespace FilteredOutputWindowVSX
             EditFilter = new RelayCommand<FilterContainer>((filter) =>
             {
                 EditingFilter = filter.Clone();
+                TogglePopup.Execute(null);
             });
 
             DeleteFilter = new RelayCommand<FilterContainer>((filter) =>
@@ -190,7 +191,7 @@ namespace FilteredOutputWindowVSX
 
             ShowAbout = new RelayCommand(() => {
 
-                Process.Start("http://google.com");
+             System.Diagnostics.Process.Start("https://nertilpoci.github.io/VisualStudio-Output-Filter-Extension/");
             });
 
         }

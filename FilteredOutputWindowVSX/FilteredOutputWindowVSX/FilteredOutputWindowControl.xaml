@@ -81,6 +81,7 @@
         <DockPanel >
             <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource VsBrush.WindowText}" 
                     Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarToolBarBorderBrushKey}}" BorderThickness="0 0 0 0">
+                <Grid>
                     <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
                         <TextBlock  VerticalAlignment="Center" Margin="5 2">Filter</TextBlock>
                         
@@ -93,8 +94,9 @@
                                Name="SelectionPopup"
                                PlacementTarget="{Binding ElementName=SelectFilterButton}"
                                PopupAnimation="Slide"
+                           Placement="Bottom"
                                AllowsTransparency="True">
-                        <Border Padding="20"  Background="{DynamicResource VsBrush.WindowFrame}">
+                            <Border Padding="20"  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarToolBarBorderBrushKey}}">
                             <Grid  >
                                 <Grid.RowDefinitions>
                                     <RowDefinition></RowDefinition>
@@ -164,14 +166,16 @@
                                       Name="ScrollToEndCheck">
                             Autoscroll
                         </CheckBox>
-                    <Button  Name="AboutButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                  
+
+                </StackPanel>
+                <Button HorizontalAlignment="Right"  Height="25" Width="25" Name="AboutButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" 
                                 Command="{Binding ShowAbout}"
                                 ToolTip="Add"
                                 >
-                        <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='about.png'}" Stretch="Fill" />
-                    </Button>
-
-                </StackPanel>
+                    <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='about.png'}" Stretch="Fill" />
+                </Button>
+    </Grid>
                    
             </Border>
 
@@ -180,7 +184,7 @@
                     <controls:FilterBuilder Margin="10,10,10,10" DockPanel.Dock="Top"
                                      HorizontalAlignment="Stretch"
                                      Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
-                    <TextBox Name="Output"   BorderBrush="Transparent"  Text="{Binding Output}"   Foreground="{DynamicResource VsBrush.WindowText}"
+                    <TextBox Name="Output" ScrollViewer.HorizontalScrollBarVisibility="Auto"  ScrollViewer.VerticalScrollBarVisibility="Auto"  TextWrapping="NoWrap"  BorderBrush="Transparent"  Text="{Binding Output}"   Foreground="{DynamicResource VsBrush.WindowText}"
                          IsReadOnly="True"
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
