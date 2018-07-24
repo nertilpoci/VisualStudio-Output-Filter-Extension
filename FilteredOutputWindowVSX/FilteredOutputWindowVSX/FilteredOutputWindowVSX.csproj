@@ -62,6 +62,7 @@
     <Compile Include="Enums\Operators.cs" />
     <Compile Include="Enums\LogicalGate.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtensions.cs" />
+    <Compile Include="Extensions\ObjectCopier.cs" />
     <Compile Include="FilteredOutputWindow.cs" />
     <Compile Include="FilteredOutputWindowCommand.cs" />
     <Compile Include="FilteredOutputWindowControl.xaml.cs">
@@ -69,6 +70,8 @@
     </Compile>
     <Compile Include="FilteredOutputWindowPackage.cs" />
     <Compile Include="Converters\AbstractConverter.cs" />
+    <Compile Include="Models\FilterRow.cs" />
+    <Compile Include="Models\FilterContainer.cs" />
     <Compile Include="Tools\TrylyObservableCollection.cs" />
     <Compile Include="ViewModels\Design\DesignStringFilterContainer.cs" />
     <Compile Include="Models\StringfilterContainer.cs" />
