@@ -46,7 +46,7 @@
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <Icon guid="guidImages" id="icon" />
         <Strings>
-          <ButtonText>FilteredOutputWindow</ButtonText>
+          <ButtonText>Output Filter</ButtonText>
         </Strings>
       </Button>
     </Buttons>

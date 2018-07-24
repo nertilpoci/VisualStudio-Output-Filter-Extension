@@ -1,4 +1,5 @@
 ﻿using FilteredOutputWindowVSX.Enums;
+using FilteredOutputWindowVSX.Extensions;
 using FilteredOutputWindowVSX.ViewModels;
 using GalaSoft.MvvmLight;
 using Newtonsoft.Json;
@@ -33,10 +34,10 @@ namespace FilteredOutputWindowVSX.Models
             var firstFilter = Rows.FirstOrDefault()?.Filter;
             return firstFilter == null?"" : $"{Rows.Skip(1).Aggregate(firstFilter.ToString(),(curr,next)=> $"{curr} {next.LogicalGate.ToString()} {next.Filter.ToString()}")}";
         }
-        public FilterContainer ShallowCopy()
+        public FilterContainer Clone()
         {
-            Id = Guid.NewGuid();
-            return (FilterContainer)MemberwiseClone();
+            var item = this.CopyObject();
+            return item;
         }
     }
 }

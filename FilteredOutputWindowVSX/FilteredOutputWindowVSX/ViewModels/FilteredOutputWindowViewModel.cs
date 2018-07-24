@@ -50,6 +50,7 @@ namespace FilteredOutputWindowVSX
             {
                 RaisePropertyChanged(nameof(FilterButtonName));
                 UpdateOutput();
+                UpdateSettings();
             };
            ColorList=new ObservableCollection<string>( typeof(Colors).GetProperties().Select(z=>z.Name));
         }
@@ -143,12 +144,11 @@ namespace FilteredOutputWindowVSX
 
             SaveFilterCommand = new RelayCommand(() =>
             {
-                //remove existing item if exist or ToString override value won't be updated in the ui
                 var existingFilter = Filters.SingleOrDefault(z => z.Id == EditingFilter.Id);
 
                 if (existingFilter != null) Filters.Remove(existingFilter);
 
-                this.Filters.Insert(0, EditingFilter.ShallowCopy());
+                this.Filters.Insert(0, EditingFilter.Clone());
 
                 this.EditingFilter = null;
                 UpdateSettings();
@@ -162,7 +162,7 @@ namespace FilteredOutputWindowVSX
 
             EditFilter = new RelayCommand<FilterContainer>((filter) =>
             {
-                EditingFilter = filter.ShallowCopy();
+                EditingFilter = filter.Clone();
             });
 
             DeleteFilter = new RelayCommand<FilterContainer>((filter) =>

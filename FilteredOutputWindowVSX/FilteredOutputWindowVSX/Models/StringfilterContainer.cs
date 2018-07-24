@@ -19,8 +19,8 @@ namespace FilteredOutputWindowVSX.Models
 
         public StringFilterContainer ShallowCopy()
         {
-            Id = Guid.NewGuid();
-            return (StringFilterContainer)MemberwiseClone();
+            var item= (StringFilterContainer)MemberwiseClone();
+            return item;
         }
 
         public override string ToString()

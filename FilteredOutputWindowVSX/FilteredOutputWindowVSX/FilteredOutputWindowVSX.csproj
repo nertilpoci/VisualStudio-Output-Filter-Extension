@@ -62,6 +62,7 @@
     <Compile Include="Enums\Operators.cs" />
     <Compile Include="Enums\LogicalGate.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtensions.cs" />
+    <Compile Include="Extensions\ObjectCopier.cs" />
     <Compile Include="FilteredOutputWindow.cs" />
     <Compile Include="FilteredOutputWindowCommand.cs" />
     <Compile Include="FilteredOutputWindowControl.xaml.cs">

@@ -51,7 +51,10 @@
                     <TextBlock VerticalAlignment="Center">Name</TextBlock>
                     <TextBox Text="{Binding Name}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.AccentBorderBrushKey}}" />
                 </StackPanel>
-              
+                <Button HorizontalAlignment="Left" ToolTip="Add New Item" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                        AncestorType={x:Type UserControl}}, Path=DataContext.AddFilterRow}" >
+                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='Add.png'}" />
+                </Button>
                 <!--TODO show when the richtextbox is added to complement the functionality-->
                 <!--<ComboBox Visibility="Hidden" SelectedItem="{Binding Color}" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                         AncestorType={x:Type UserControl}}, Path=DataContext.ColorList}"  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
@@ -77,10 +80,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-                <Button HorizontalAlignment="Left" ToolTip="Add New Item" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                        AncestorType={x:Type UserControl}}, Path=DataContext.AddFilterRow}" >
-                    <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='Add.png'}" />
-                </Button>
+               
                 <StackPanel Orientation="Horizontal">
                    
                     <Button ToolTip="Save" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
