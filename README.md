@@ -1,12 +1,20 @@
-# VisualStudio Filterable Output Window Extensiosn
-Download here https://marketplace.visualstudio.com/items?itemName=nertilpoci.FilterDebugWindow
+### Debug output filter
+Download here [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=nertilpoci.FilterDebugWindow) 
 
-Provide new output windows which can be filtered by tags so you can debug on section of code at a time
+Provide new output windows which can be filtered so you can debug only section of code you need at one time
 
-Working on a large project with many developers means that everybody does this **Debug.Write(message)**  the the output window is not very useful since you cannot read your messages with all the messages coming in from different sections of the app. This extension provides a new window which reads the output window and then you can filter the output based on tags
+Working on a large project with many developers means that everybody does this **Debug.Write(message)**  the the output window is not very useful since you cannot read your messages with all the messages coming in from different sections of the app. This extension provides a new window which reads the output window and then you can filter the output using your own filters.
 
-    Debug.WriteLine("@mytag" + message)
 
-   
+![Screenshot 1](https://imgur.com/6kWk1pJ.png)
 
- You can create an extension that would do this for your tags automatically for you. After this you can select which tags you want to display or not display
+
+ 
+ ![Screenshot 2](https://imgur.com/dnvWFBO.png)
+ 
+ ![Screenshot 3](https://i.imgur.com/kNgSp60.png)
+ 
+ 
+ 
+ ![Screenshot 4](https://i.imgur.com/3aE7itw.png)
+ 
