@@ -1,5 +1,5 @@
-# VisualStudio Filterable Output Window Extensiosn
-Download here https://marketplace.visualstudio.com/items?itemName=nertilpoci.FilterDebugWindow
+### Debug output filter
+Download here [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=nertilpoci.FilterDebugWindow) 
 
 Provide new output windows which can be filtered so you can debug only section of code you need at one time
 
