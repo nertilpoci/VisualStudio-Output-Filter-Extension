@@ -3,10 +3,10 @@
     <Metadata>
         <Identity Id="d9de28c1-06dc-4139-8a93-882f6cff9dfb" Version="2.0" Language="en-US" Publisher="Nertil POCI, Miroslav MIKUS" />
         <DisplayName>Filter Debug Window</DisplayName>
-        <Description xml:space="preserve">Filter the output of the debug output window using tags, to get ouput only from parts of the code you are currently debugging.</Description>
+        <Description xml:space="preserve">Filter the output of the debug window to see only result you need to debug portion of code you are working on, supports multiple filters and easy to save filter for continued work</Description>
         <Icon>Resources\FilteredOutputWindowPackage.ico</Icon>
         <PreviewImage>Resources\preview.png</PreviewImage>
-        <Tags>debug filter, output filter</Tags>
+        <Tags>output filter, debug filter, filter, query, parse</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,16.0)" />
