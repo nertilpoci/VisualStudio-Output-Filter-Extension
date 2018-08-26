@@ -41,8 +41,9 @@ namespace FilteredOutputWindowVSX
             FilterMode = (LogicalGate)Properties.Settings.Default.FilterMode;
             _documentEvents.PaneUpdated += (e) =>
             {
+                if (e.Name != "Debug") return;
                 _currentText = GetPaneText(e);
-                _documentEvents_PaneUpdated(e);
+                UpdateOutput();
             };
 
             Filters = new TrulyObservableCollection<FilterContainer>(GetSettings());
@@ -62,7 +63,6 @@ namespace FilteredOutputWindowVSX
             _documentEvents = _dteEvents.OutputWindowEvents;
         }
 
-        private string _oldText = string.Empty;
         private string _currentText = string.Empty;
         public LogicalGate _filterMode;
         #region Prop for ViewModel
@@ -124,11 +124,7 @@ namespace FilteredOutputWindowVSX
         {
             Clear = new RelayCommand(() =>
             {
-                _oldText = string.Empty;
-                _currentText = "";
-                _output.Clear();
-                RaisePropertyChanged(nameof(Output));
-
+                
                 IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
 
                 Guid debugPaneGuid = VSConstants.GUID_OutWindowDebugPane;
@@ -136,6 +132,8 @@ namespace FilteredOutputWindowVSX
                 outWindow.GetPane(ref debugPaneGuid, out IVsOutputWindowPane pane);
 
                 pane.Clear();
+                _currentText = string.Empty;
+                UpdateOutput();
             });
 
             AddNewFilter = new RelayCommand(() =>
@@ -226,23 +224,7 @@ namespace FilteredOutputWindowVSX
         public Expression<Func<string, bool>> Expression => !SelectedFilters.Any() ? PredicateBuilder.True<string>() :
             SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => FilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression));
         public bool CanDelete => SelectedFilters.Any();
-        private void _documentEvents_PaneUpdated(OutputWindowPane pPane)
-        {
-            if (pPane.Name != "Debug") return;
-
-            try
-            {
-                var newText = _currentText.Substring(_oldText.Count() - 1 > 0 ? _oldText.Count() - 1 : 0);
-
-                _oldText = _currentText;
-
-                AddToOutput(ProcessString(newText, Expression));
-            }
-            catch (Exception)
-            {
-
-            }
-        }
+       
 
         private void UpdateOutput()
         {
@@ -251,9 +233,9 @@ namespace FilteredOutputWindowVSX
 
         private static string GetPaneText(OutputWindowPane pPane)
         {
-            pPane.TextDocument.Selection.SelectAll();
-
-            return pPane.TextDocument.Selection.Text;
+            TextDocument document = pPane.TextDocument;
+            EditPoint point = document.StartPoint.CreateEditPoint();
+            return point.GetText(document.EndPoint);
         }
 
         private IEnumerable<string> ProcessString(string input, Expression<Func<string, bool>> filter)
