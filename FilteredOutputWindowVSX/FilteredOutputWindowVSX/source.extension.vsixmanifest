@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="d9de28c1-06dc-4139-8a93-882f6cff9dfb" Version="2.0" Language="en-US" Publisher="Nertil POCI, Miroslav MIKUS" />
+        <Identity Id="d9de28c1-06dc-4139-8a93-882f6cff9dfb" Version="2.1" Language="en-US" Publisher="Nertil POCI, Miroslav MIKUS" />
         <DisplayName>Filter Debug Window</DisplayName>
         <Description xml:space="preserve">Filter the output of the debug window to see only result you need to debug portion of code you are working on, supports multiple filters and easy to save filter for continued work</Description>
         <Icon>Resources\FilteredOutputWindowPackage.ico</Icon>
