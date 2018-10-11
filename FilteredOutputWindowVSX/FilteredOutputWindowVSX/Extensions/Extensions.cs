@@ -15,9 +15,12 @@ namespace FilteredOutputWindowVSX.Extensions
     /// Provides a method for performing a deep copy of an object.
     /// Binary Serialization is used to perform the copy.
     /// </summary>
-    public static class ObjectCopier
+    public static class Extensions
     {
-
+        public static Func<T, bool> Not<T>(this Func<T, bool> f)
+        {
+            return x => !f(x);
+        }
         public static T CopyObject<T>(this T objSource) where T:class
         {
 

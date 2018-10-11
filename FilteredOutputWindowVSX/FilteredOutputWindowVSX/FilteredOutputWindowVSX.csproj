@@ -44,8 +44,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CopyVsixExtensionFiles>True</CopyVsixExtensionFiles>
+    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
     <CopyVsixExtensionLocation>C:\Users\nertil\Desktop\Output filte</CopyVsixExtensionLocation>
+    <CreateVsixContainer>True</CreateVsixContainer>
+    <DeployExtension>True</DeployExtension>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -63,10 +65,11 @@
     </Compile>
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Converters\PictureConverter.cs" />
+    <Compile Include="Enums\FilteringMode.cs" />
     <Compile Include="Enums\Operators.cs" />
     <Compile Include="Enums\LogicalGate.cs" />
     <Compile Include="Extensions\EnumBindingSourceExtensions.cs" />
-    <Compile Include="Extensions\ObjectCopier.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="FilteredOutputWindow.cs" />
     <Compile Include="FilteredOutputWindowCommand.cs" />
     <Compile Include="FilteredOutputWindowControl.xaml.cs">

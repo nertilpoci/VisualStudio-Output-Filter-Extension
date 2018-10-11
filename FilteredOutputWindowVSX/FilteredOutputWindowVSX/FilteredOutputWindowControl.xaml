@@ -100,22 +100,32 @@
                             <Grid  >
                                 <Grid.RowDefinitions>
                                     <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
                                 <StackPanel Margin="0,0,20,0"  Orientation="Horizontal">
-                                    <TextBlock  Margin="5">Multi Filter Mode :</TextBlock>
+                                    <TextBlock  Margin="5">Filter Mode :</TextBlock>
                                     <ComboBox Margin="5" Width="100" SelectedItem="{Binding FilterMode}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
+             Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                          ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:FilteringMode}}}"
+                         />
+                                </StackPanel>
+
+                                    <StackPanel Grid.Row="1" Margin="0,0,20,0"  Orientation="Horizontal">
+                                        <TextBlock  Margin="5">Multi Filter Mode :</TextBlock>
+                                        <ComboBox Margin="5" Width="100" SelectedItem="{Binding MultiFilterMode}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
              Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
                           ItemsSource="{Binding Source={extensions:EnumBindingSource {x:Type enums:LogicalGate}}}"
                          />
-                                </StackPanel>
-                                <Button Width="20" Height="20"  Margin="0,-18,-18,0" Name="closePopup" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                    </StackPanel>
+                                
+                                    <Button Width="20" Height="20"  Margin="0,-18,-18,0" Name="closePopup" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" HorizontalAlignment="Right" VerticalAlignment="Top"
                                 Command="{Binding TogglePopup}"
                                 ToolTip="Close"
                                 >
                                     <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='cancel.png'}" Stretch="Fill" />
                                 </Button>
-                                <ScrollViewer  Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
+                                <ScrollViewer  Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
                                     <ItemsControl ItemsSource="{Binding Filters}" 
                                              >
                                         <ItemsControl.ItemTemplate>

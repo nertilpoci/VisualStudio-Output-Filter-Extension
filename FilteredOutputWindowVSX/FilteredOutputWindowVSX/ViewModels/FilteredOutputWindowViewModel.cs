@@ -22,6 +22,7 @@ using GalaSoft.MvvmLight;
 using FilteredOutputWindowVSX.Enums;
 using System.Windows.Media;
 using System.Reflection;
+using FilteredOutputWindowVSX.Extensions;
 
 namespace FilteredOutputWindowVSX
 {
@@ -38,7 +39,8 @@ namespace FilteredOutputWindowVSX
             CreateCommands();
 
             AutoScroll = Properties.Settings.Default.AutoScroll;
-            FilterMode = (LogicalGate)Properties.Settings.Default.FilterMode;
+            MultiFilterMode = (LogicalGate)Properties.Settings.Default.MultiFilterMode;
+            FilterMode = (FilteringMode)Properties.Settings.Default.FilterMode;
             _documentEvents.PaneUpdated += (e) =>
             {
                 if (e.Name != "Debug") return;
@@ -64,7 +66,8 @@ namespace FilteredOutputWindowVSX
         }
 
         private string _currentText = string.Empty;
-        public LogicalGate _filterMode;
+        public LogicalGate _multiFilterMode;
+        public FilteringMode _filterMode;
         #region Prop for ViewModel
         private StringBuilder _output = new StringBuilder();
         private bool _autoScroll;
@@ -83,8 +86,8 @@ namespace FilteredOutputWindowVSX
             }
             RaisePropertyChanged(nameof(Output));
         }
-
-        public LogicalGate FilterMode { get => _filterMode; set { Set(ref _filterMode, value); Properties.Settings.Default.FilterMode = (int)value; Properties.Settings.Default.Save(); UpdateOutput(); } }
+        public FilteringMode FilterMode { get => _filterMode; set { Set(ref _filterMode, value); Properties.Settings.Default.FilterMode = (int)value; Properties.Settings.Default.Save(); UpdateOutput(); } }
+        public LogicalGate MultiFilterMode { get => _multiFilterMode; set { Set(ref _multiFilterMode, value); Properties.Settings.Default.MultiFilterMode = (int)value; Properties.Settings.Default.Save(); UpdateOutput(); } }
         public string Output
         {
             get => _output.ToString();
@@ -221,8 +224,8 @@ namespace FilteredOutputWindowVSX
         public IEnumerable<FilterContainer> SelectedFilters => this.Filters?.Where(z => z.IsSelected)??Enumerable.Empty<FilterContainer>();
         public ObservableCollection<string> ColorList { get => _colorList; set => Set(ref _colorList, value); }
         public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
-        public Expression<Func<string, bool>> Expression => !SelectedFilters.Any() ? PredicateBuilder.True<string>() :
-            SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => FilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression));
+        public Func<string, bool> Expression => !SelectedFilters.Any() ? null :
+            (SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => MultiFilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression))).Compile();
         public bool CanDelete => SelectedFilters.Any();
        
 
@@ -238,14 +241,11 @@ namespace FilteredOutputWindowVSX
             return point.GetText(document.EndPoint);
         }
 
-        private IEnumerable<string> ProcessString(string input, Expression<Func<string, bool>> filter)
+        private IEnumerable<string> ProcessString(string input, Func<string, bool> filter)
         {
             var textLines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
                                        .Where(a => !string.IsNullOrEmpty(a));
-
-            var filterFunc = filter.Compile();
-
-            return filter != null ? textLines.Where(filterFunc) : textLines;
+            return filter != null ? FilterMode== FilteringMode.Include ? textLines.Where(filter) : textLines.Where(filter.Not()) : textLines;
         }
     }
 }
