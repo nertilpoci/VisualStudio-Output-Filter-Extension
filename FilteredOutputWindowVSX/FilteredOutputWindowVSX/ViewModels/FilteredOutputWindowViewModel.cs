@@ -44,8 +44,23 @@ namespace FilteredOutputWindowVSX
             _documentEvents.PaneUpdated += (e) =>
             {
                 if (e.Name != "Debug") return;
-                _currentText = GetPaneText(e);
-                UpdateOutput();
+                var text = GetPaneText(e);
+                var newLines = SplitString(text);
+                if (newLines.Count() <= _processedLines.Count()) // the output was cleared 
+                {
+                    _currentLines = newLines;
+                    _processedLines = newLines;
+                    AddToOutput(ProcessString(newLines, Expression), true);
+
+                }
+                else
+                {
+                    _currentLines = newLines.Skip(_processedLines.Count());
+                    _processedLines = newLines;
+                    AddToOutput(ProcessString(_currentLines, Expression), false);
+
+
+                }
             };
 
             Filters = new TrulyObservableCollection<FilterContainer>(GetSettings());
@@ -65,7 +80,8 @@ namespace FilteredOutputWindowVSX
             _documentEvents = _dteEvents.OutputWindowEvents;
         }
 
-        private string _currentText = string.Empty;
+        private IEnumerable<string> _processedLines = Enumerable.Empty<string>();
+        private IEnumerable<string> _currentLines = Enumerable.Empty<string>();
         public LogicalGate _multiFilterMode;
         public FilteringMode _filterMode;
         #region Prop for ViewModel
@@ -135,7 +151,8 @@ namespace FilteredOutputWindowVSX
                 outWindow.GetPane(ref debugPaneGuid, out IVsOutputWindowPane pane);
 
                 pane.Clear();
-                _currentText = string.Empty;
+                _currentLines = Enumerable.Empty<string>();
+                _processedLines = Enumerable.Empty<string>();
                 UpdateOutput();
             });
 
@@ -231,7 +248,7 @@ namespace FilteredOutputWindowVSX
 
         private void UpdateOutput()
         {
-            AddToOutput(ProcessString(_currentText, Expression), true);
+            AddToOutput(ProcessString(_processedLines, Expression), true);
         }
 
         private static string GetPaneText(OutputWindowPane pPane)
@@ -241,11 +258,15 @@ namespace FilteredOutputWindowVSX
             return point.GetText(document.EndPoint);
         }
 
-        private IEnumerable<string> ProcessString(string input, Func<string, bool> filter)
+        private IEnumerable<string> ProcessString(IEnumerable<string> textLines, Func<string, bool> filter)
         {
-            var textLines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
-                                       .Where(a => !string.IsNullOrEmpty(a));
+           
             return filter != null ? FilterMode== FilteringMode.Include ? textLines.Where(filter) : textLines.Where(filter.Not()) : textLines;
+        }
+        private IEnumerable<string> SplitString(string input)
+        {
+          return input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                                      .Where(a => !string.IsNullOrEmpty(a));
         }
     }
 }
