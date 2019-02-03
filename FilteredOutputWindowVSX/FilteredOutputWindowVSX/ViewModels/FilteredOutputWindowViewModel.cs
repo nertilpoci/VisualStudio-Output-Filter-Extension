@@ -43,7 +43,15 @@ namespace FilteredOutputWindowVSX
             FilterMode = (FilteringMode)Properties.Settings.Default.FilterMode;
             _documentEvents.PaneUpdated += (e) =>
             {
-                if (e.Name != "Debug") return;
+                // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )
+                const string debugPane = "{FC076020-078A-11D1-A7DF-00A0C9110051}";
+                if (e.Guid != debugPane)
+                {
+                    return;
+                }
+                // In Chinese we call the Debug as 调试
+                // That is why I can not view any.
+                //if (e.Name != "Debug") return;
                 _currentText = GetPaneText(e);
                 UpdateOutput();
             };
