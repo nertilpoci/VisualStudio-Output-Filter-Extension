@@ -45,7 +45,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
-    <CopyVsixExtensionLocation>C:\Users\nertil\Desktop\Output filte</CopyVsixExtensionLocation>
+    <CopyVsixExtensionLocation>C:\Users\Nerti\Desktop</CopyVsixExtensionLocation>
     <CreateVsixContainer>True</CreateVsixContainer>
     <DeployExtension>True</DeployExtension>
   </PropertyGroup>

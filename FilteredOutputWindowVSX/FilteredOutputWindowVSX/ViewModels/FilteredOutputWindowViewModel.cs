@@ -49,9 +49,7 @@ namespace FilteredOutputWindowVSX
                 {
                     return;
                 }
-                // In Chinese we call the Debug as 调试
-                // That is why I can not view any.
-                //if (e.Name != "Debug") return;
+              
                 _currentText = GetPaneText(e);
                 UpdateOutput();
             };
