@@ -83,6 +83,10 @@
                     Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarToolBarBorderBrushKey}}" BorderThickness="0 0 0 0">
                 <Grid>
                     <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
+                        <ComboBox Margin="5" Width="100" SelectedItem="{Binding CurrentWindow}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
+             Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                          ItemsSource="{Binding WindowList}"
+                         />
                         <TextBlock  VerticalAlignment="Center" Margin="5 2">Filter</TextBlock>
                         
                         <Button Content="{Binding FilterButtonName}"  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}"

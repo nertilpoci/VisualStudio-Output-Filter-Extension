@@ -37,15 +37,20 @@ namespace FilteredOutputWindowVSX
         {
             SetupEvents();
             CreateCommands();
-
+            WindowList = new ObservableCollection<string>();
             AutoScroll = Properties.Settings.Default.AutoScroll;
             MultiFilterMode = (LogicalGate)Properties.Settings.Default.MultiFilterMode;
             FilterMode = (FilteringMode)Properties.Settings.Default.FilterMode;
             _documentEvents.PaneUpdated += (e) =>
             {
+                if (!WindowList.Contains(e.Name))
+                {
+                    WindowList.Add(e.Name);
+                    if (string.IsNullOrEmpty(CurrentWindow)) CurrentWindow = e.Name;
+                }
                 // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )
                 const string debugPane = "{FC076020-078A-11D1-A7DF-00A0C9110051}";
-                if (e.Guid != debugPane)
+                if (e.Guid != VSConstants.GUID_OutWindowDebugPane.ToString())
                 {
                     return;
                 }
@@ -66,23 +71,30 @@ namespace FilteredOutputWindowVSX
 
         private void SetupEvents()
         {
-            _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
+
+            
+               _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
+               var tst = (OutputWindowPanes)Package.GetGlobalService(typeof(OutputWindowPanes));
             _dteEvents = _dte.Events;
             _documentEvents = _dteEvents.OutputWindowEvents;
         }
 
         private string _currentText = string.Empty;
+        private string _currentWindow;
+        private Dictionary<string, string> _outputWindowContent = new Dictionary<string, string>();
         public LogicalGate _multiFilterMode;
         public FilteringMode _filterMode;
         #region Prop for ViewModel
         private StringBuilder _output = new StringBuilder();
         private bool _autoScroll;
 
+        public string CurrentWindow { get => _currentWindow; set => Set(ref _currentWindow, value); }
         public TrulyObservableCollection<FilterContainer> Filters { get; set; }
 
            private FilterContainer _editingFilter;
         public FilterContainer EditingFilter { get => _editingFilter; set => Set(ref _editingFilter, value); }
         private ObservableCollection<string> _colorList;
+        private ObservableCollection<string> _windowList;
         private void AddToOutput(IEnumerable<string> input, bool reset = false)
         {
             if (reset) _output.Clear();
@@ -229,6 +241,7 @@ namespace FilteredOutputWindowVSX
 
         public IEnumerable<FilterContainer> SelectedFilters => this.Filters?.Where(z => z.IsSelected)??Enumerable.Empty<FilterContainer>();
         public ObservableCollection<string> ColorList { get => _colorList; set => Set(ref _colorList, value); }
+        public ObservableCollection<string> WindowList { get => _windowList; set => Set(ref _windowList, value); } 
         public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
         public Func<string, bool> Expression => !SelectedFilters.Any() ? null :
             (SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => MultiFilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression))).Compile();
