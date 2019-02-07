@@ -32,7 +32,7 @@ namespace FilteredOutputWindowVSX
         private Events _dteEvents;
         private OutputWindowEvents _documentEvents;
         private StringFilterContainer _default = new StringFilterContainer() { Name = "Everything" };
-
+        private Dictionary<string, string> _windowNames = new Dictionary<string, string>();
         public FilteredOutputWindowViewModel()
         {
             SetupEvents();
@@ -48,14 +48,16 @@ namespace FilteredOutputWindowVSX
                     WindowList.Add(e.Name);
                     if (string.IsNullOrEmpty(CurrentWindow)) CurrentWindow = e.Name;
                 }
+                if (!_windowNames.ContainsKey(e.Name)) _windowNames.Add(e.Name, e.Guid);
                 // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )
                 const string debugPane = "{FC076020-078A-11D1-A7DF-00A0C9110051}";
-                if (e.Guid != VSConstants.GUID_OutWindowDebugPane.ToString())
-                {
-                    return;
-                }
-              
-                _currentText = GetPaneText(e);
+                
+                _outputWindowContent[e.Name] = GetPaneText(e);
+                //if (e.Guid != debugPane.ToString())
+                //{
+                //    return;
+                //}
+                //_currentText = GetPaneText(e);
                 UpdateOutput();
             };
 
@@ -74,7 +76,6 @@ namespace FilteredOutputWindowVSX
 
             
                _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
-               var tst = (OutputWindowPanes)Package.GetGlobalService(typeof(OutputWindowPanes));
             _dteEvents = _dte.Events;
             _documentEvents = _dteEvents.OutputWindowEvents;
         }
@@ -147,14 +148,23 @@ namespace FilteredOutputWindowVSX
             {
                 
                 IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+                if (!string.IsNullOrEmpty(CurrentWindow))
+                {
+                    if (_windowNames.ContainsKey(CurrentWindow))
+                    {
+                        var id = Guid.Parse(_windowNames[CurrentWindow]);
+                        outWindow.GetPane(ref id, out IVsOutputWindowPane pane);
 
+                        pane.Clear();
+                        _outputWindowContent[CurrentWindow] = "";
+                        _currentText = string.Empty;
+                        UpdateOutput();
+                       
+                    }
+                }
                 Guid debugPaneGuid = VSConstants.GUID_OutWindowDebugPane;
 
-                outWindow.GetPane(ref debugPaneGuid, out IVsOutputWindowPane pane);
-
-                pane.Clear();
-                _currentText = string.Empty;
-                UpdateOutput();
+               
             });
 
             AddNewFilter = new RelayCommand(() =>
@@ -250,7 +260,7 @@ namespace FilteredOutputWindowVSX
 
         private void UpdateOutput()
         {
-            AddToOutput(ProcessString(_currentText, Expression), true);
+         if(CurrentWindow!=null && _outputWindowContent.ContainsKey(CurrentWindow))   AddToOutput(ProcessString(_outputWindowContent[CurrentWindow], Expression), true);
         }
 
         private static string GetPaneText(OutputWindowPane pPane)
