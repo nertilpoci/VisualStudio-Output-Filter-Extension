@@ -41,6 +41,7 @@ namespace FilteredOutputWindowVSX
             AutoScroll = Properties.Settings.Default.AutoScroll;
             MultiFilterMode = (LogicalGate)Properties.Settings.Default.MultiFilterMode;
             FilterMode = (FilteringMode)Properties.Settings.Default.FilterMode;
+
             _documentEvents.PaneUpdated += (e) =>
             {
                 if (!WindowList.Contains(e.Name))
@@ -49,15 +50,8 @@ namespace FilteredOutputWindowVSX
                     if (string.IsNullOrEmpty(CurrentWindow)) CurrentWindow = e.Name;
                 }
                 if (!_windowNames.ContainsKey(e.Name)) _windowNames.Add(e.Name, e.Guid);
-                // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )
-                const string debugPane = "{FC076020-078A-11D1-A7DF-00A0C9110051}";
-                
-                _outputWindowContent[e.Name] = GetPaneText(e);
-                //if (e.Guid != debugPane.ToString())
-                //{
-                //    return;
-                //}
-                //_currentText = GetPaneText(e);
+                // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )                
+                PorcessNewInput(e);
                 UpdateOutput();
             };
 
@@ -70,7 +64,37 @@ namespace FilteredOutputWindowVSX
             };
            ColorList=new ObservableCollection<string>( typeof(Colors).GetProperties().Select(z=>z.Name));
         }
+        public void PorcessNewInput(OutputWindowPane pane)
+        {
+            if (!_outputWindowContent.ContainsKey(pane.Name)) _outputWindowContent.Add(pane.Name, new List<PaneContentLineModel>());
+            var currentPaneContent = _outputWindowContent[pane.Name];
 
+
+            var newPaneContent = GetPaneData(pane);
+            if (currentPaneContent.Count() > newPaneContent.Count())
+            {
+                //pane cleared process all again
+                currentPaneContent = newPaneContent.Select(z=>new PaneContentLineModel { Text=z }).ToList();
+                currentPaneContent.ForEach(line => {
+                    line.MatchesFilter = FilterMode == FilteringMode.Include ? Expression(line.Text) : Expression.Not()(line.Text);
+
+                });
+               
+            }
+            else
+            {
+                var newLines = newPaneContent.Skip(currentPaneContent.Count()).Select(z=>new PaneContentLineModel { Text=z}).ToList();
+                currentPaneContent.ForEach(line => {
+                    line.MatchesFilter = FilterMode == FilteringMode.Include ? Expression(line.Text) : Expression.Not()(line.Text);
+
+                });
+                currentPaneContent.AddRange(newLines); 
+            }
+        }
+        public IEnumerable<string> TextToLines(string input)
+        {
+          return input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Where(a => !string.IsNullOrEmpty(a));
+        }
         private void SetupEvents()
         {
 
@@ -82,7 +106,7 @@ namespace FilteredOutputWindowVSX
 
         private string _currentText = string.Empty;
         private string _currentWindow;
-        private Dictionary<string, string> _outputWindowContent = new Dictionary<string, string>();
+        private Dictionary<string, List<PaneContentLineModel>> _outputWindowContent = new Dictionary<string, List<PaneContentLineModel>>();
         public LogicalGate _multiFilterMode;
         public FilteringMode _filterMode;
         #region Prop for ViewModel
@@ -156,7 +180,7 @@ namespace FilteredOutputWindowVSX
                         outWindow.GetPane(ref id, out IVsOutputWindowPane pane);
 
                         pane.Clear();
-                        _outputWindowContent[CurrentWindow] = "";
+                        _outputWindowContent[CurrentWindow] = new List<PaneContentLineModel>();
                         _currentText = string.Empty;
                         UpdateOutput();
                        
@@ -253,21 +277,22 @@ namespace FilteredOutputWindowVSX
         public ObservableCollection<string> ColorList { get => _colorList; set => Set(ref _colorList, value); }
         public ObservableCollection<string> WindowList { get => _windowList; set => Set(ref _windowList, value); } 
         public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
-        public Func<string, bool> Expression => !SelectedFilters.Any() ? null :
+        public Func<string, bool> Expression => !SelectedFilters.Any() ? (s)=>true :
             (SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => MultiFilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression))).Compile();
         public bool CanDelete => SelectedFilters.Any();
        
 
         private void UpdateOutput()
         {
-         if(CurrentWindow!=null && _outputWindowContent.ContainsKey(CurrentWindow))   AddToOutput(ProcessString(_outputWindowContent[CurrentWindow], Expression), true);
+         if(CurrentWindow!=null && _outputWindowContent.ContainsKey(CurrentWindow))   AddToOutput(_outputWindowContent[CurrentWindow].Where(z=>z.MatchesFilter).Select(z=>z.Text), true);
         }
 
-        private static string GetPaneText(OutputWindowPane pPane)
+        private IEnumerable<string> GetPaneData(OutputWindowPane pPane)
         {
             TextDocument document = pPane.TextDocument;
             EditPoint point = document.StartPoint.CreateEditPoint();
-            return point.GetText(document.EndPoint);
+            var text= point.GetText(document.EndPoint);
+            return TextToLines(text);
         }
 
         private IEnumerable<string> ProcessString(string input, Func<string, bool> filter)

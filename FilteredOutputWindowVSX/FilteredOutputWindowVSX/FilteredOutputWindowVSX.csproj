@@ -79,6 +79,7 @@
     <Compile Include="Converters\AbstractConverter.cs" />
     <Compile Include="Models\FilterRow.cs" />
     <Compile Include="Models\FilterContainer.cs" />
+    <Compile Include="Models\PaneContentModel.cs" />
     <Compile Include="Tools\TrylyObservableCollection.cs" />
     <Compile Include="ViewModels\Design\DesignStringFilterContainer.cs" />
     <Compile Include="Models\StringfilterContainer.cs" />
