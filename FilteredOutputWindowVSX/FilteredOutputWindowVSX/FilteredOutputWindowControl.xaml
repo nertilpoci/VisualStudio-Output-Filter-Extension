@@ -14,10 +14,10 @@
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="300" d:DesignWidth="500"
              xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
-    
-
+            Loaded="MyToolWindow_Loaded" Unloaded="MyToolWindow_Unloaded"
     xmlns:tools="clr-namespace:FilteredOutputWindowVSX.Tools" 
              Name="MyToolWindow">
+    
     <UserControl.Resources>
         <converters:PictureConverter x:Key="PicConverter"/>
         <tools:NullToHiddenConverter x:Key="NullToHiddenConverter"/>

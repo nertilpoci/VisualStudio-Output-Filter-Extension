@@ -35,25 +35,13 @@ namespace FilteredOutputWindowVSX
         private Dictionary<string, string> _windowNames = new Dictionary<string, string>();
         public FilteredOutputWindowViewModel()
         {
-            SetupEvents();
             CreateCommands();
             WindowList = new ObservableCollection<string>();
             AutoScroll = Properties.Settings.Default.AutoScroll;
             MultiFilterMode = (LogicalGate)Properties.Settings.Default.MultiFilterMode;
             FilterMode = (FilteringMode)Properties.Settings.Default.FilterMode;
 
-            _documentEvents.PaneUpdated += (e) =>
-            {
-                if (!WindowList.Contains(e.Name))
-                {
-                    WindowList.Add(e.Name);
-                    if (string.IsNullOrEmpty(CurrentWindow)) CurrentWindow = e.Name;
-                }
-                if (!_windowNames.ContainsKey(e.Name)) _windowNames.Add(e.Name, e.Guid);
-                // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )                
-                PorcessNewInput(e);
-                UpdateOutput();
-            };
+           
 
             Filters = new TrulyObservableCollection<FilterContainer>(GetSettings());
             Filters.CollectionChanged += (s, e) =>
@@ -95,15 +83,20 @@ namespace FilteredOutputWindowVSX
         {
           return input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Where(a => !string.IsNullOrEmpty(a));
         }
-        private void SetupEvents()
+      
+
+        private void PaneUpdated(OutputWindowPane pane)
         {
-
-            
-               _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
-            _dteEvents = _dte.Events;
-            _documentEvents = _dteEvents.OutputWindowEvents;
+            if (!WindowList.Contains(pane.Name))
+            {
+                WindowList.Add(pane.Name);
+                if (string.IsNullOrEmpty(CurrentWindow)) CurrentWindow = pane.Name;
+            }
+            if (!_windowNames.ContainsKey(pane.Name)) _windowNames.Add(pane.Name, pane.Guid);
+            // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )                
+            PorcessNewInput(pane);
+            UpdateOutput();
         }
-
         private string _currentText = string.Empty;
         private string _currentWindow;
         private Dictionary<string, List<PaneContentLineModel>> _outputWindowContent = new Dictionary<string, List<PaneContentLineModel>>();
@@ -158,6 +151,8 @@ namespace FilteredOutputWindowVSX
         public RelayCommand<FilterContainer> DeleteFilter { get; private set; }
         public RelayCommand TogglePopup { get; private set; }
         public ICommand Clear { get; private set; }
+        public ICommand LoadedCommand { get; private set; }
+        public ICommand UnLoadedCommand { get; private set; }
         public ICommand SaveFilterCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
         public RelayCommand<FilterRow> DeleteFilterRow { get; private set; }
@@ -190,7 +185,21 @@ namespace FilteredOutputWindowVSX
 
                
             });
+            LoadedCommand = new RelayCommand(() =>
+            {
 
+                _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
+                _dteEvents = _dte.Events;
+                _documentEvents = _dteEvents.OutputWindowEvents;
+                _documentEvents.PaneUpdated += PaneUpdated;
+
+            });
+            UnLoadedCommand =new RelayCommand(() =>
+            {
+
+                _documentEvents.PaneUpdated -= PaneUpdated;
+
+            });
             AddNewFilter = new RelayCommand(() =>
             {
                 var filter = new FilterContainer { Id=Guid.NewGuid(), Name = "Filter nr " + (Filters.Count + 1),  Rows=new ObservableCollection<FilterRow>() { new FilterRow { Filter=new StringFilterItem { Value="value" } } } };
