@@ -28,6 +28,7 @@
 
         private void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            //System.Windows.Interactive doesn't work with vs studio extension so stopping and starting events this not so nice way :(
             _dataContext.LoadedCommand.Execute(null);
         }
 
