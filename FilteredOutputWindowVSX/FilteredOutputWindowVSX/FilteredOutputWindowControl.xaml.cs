@@ -12,10 +12,13 @@
 
     public partial class FilteredOutputWindowControl : UserControl
     {
+        FilteredOutputWindowViewModel _dataContext= new FilteredOutputWindowViewModel();
 
         public FilteredOutputWindowControl()
         {
             this.InitializeComponent();
+
+            DataContext = _dataContext;
             Output.SizeChanged += (s, e) =>
             {
                 if (Scroller.Tag is bool autoScroll && autoScroll)
@@ -23,7 +26,15 @@
             };
         }
 
-       
-        
+        private void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            //System.Windows.Interactive doesn't work with vs studio extension so stopping and starting events this not so nice way :(
+            _dataContext.LoadedCommand.Execute(null);
+        }
+
+        private void MyToolWindow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _dataContext.UnLoadedCommand.Execute(null);
+        }
     }
 }

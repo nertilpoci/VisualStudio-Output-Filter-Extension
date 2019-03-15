@@ -14,10 +14,10 @@
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="300" d:DesignWidth="500"
              xmlns:vs_shell="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
-    
-
+            Loaded="MyToolWindow_Loaded" Unloaded="MyToolWindow_Unloaded"
     xmlns:tools="clr-namespace:FilteredOutputWindowVSX.Tools" 
              Name="MyToolWindow">
+    
     <UserControl.Resources>
         <converters:PictureConverter x:Key="PicConverter"/>
         <tools:NullToHiddenConverter x:Key="NullToHiddenConverter"/>
@@ -83,6 +83,10 @@
                     Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarToolBarBorderBrushKey}}" BorderThickness="0 0 0 0">
                 <Grid>
                     <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
+                        <ComboBox Margin="5" Width="100" SelectedItem="{Binding CurrentWindow}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
+             Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
+                          ItemsSource="{Binding WindowList}"
+                         />
                         <TextBlock  VerticalAlignment="Center" Margin="5 2">Filter</TextBlock>
                         
                         <Button Content="{Binding FilterButtonName}"  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}"
