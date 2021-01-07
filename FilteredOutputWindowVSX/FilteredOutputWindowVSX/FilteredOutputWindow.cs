@@ -1,8 +1,11 @@
 ﻿namespace FilteredOutputWindowVSX
 {
     using System;
+    using System.Diagnostics;
     using System.Runtime.InteropServices;
+    using EnvDTE;
     using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
 
     /// <summary>
     /// This class implements the tool window exposed by this package and hosts a user control.
@@ -18,18 +21,32 @@
     [Guid("97b1ff8f-8438-4b8c-b5c9-21a10ddee5e0")]
     public class FilteredOutputWindow : ToolWindowPane
     {
+
+        private FilteredOutputWindowControl _content;
         /// <summary>
         /// Initializes a new instance of the <see cref="FilteredOutputWindow"/> class.
         /// </summary>
+
         public FilteredOutputWindow() : base(null)
         {
-            this.Caption = "Output Filter";
+           
 
+            this.Caption = "Output Filter";
+            _content = new FilteredOutputWindowControl { }; ;
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on
             // the object returned by the Content property.
-            this.Content = new FilteredOutputWindowControl {  };
+            this.Content = _content;
+            Instance = this;
         }
+        public void AddNewText(string text)
+        {
+            Debug.WriteLine(text);
+            _content.AddText(text);
+        } 
+        //static reference till better solution is found
+        public static FilteredOutputWindow Instance;
+
 
     }
 }

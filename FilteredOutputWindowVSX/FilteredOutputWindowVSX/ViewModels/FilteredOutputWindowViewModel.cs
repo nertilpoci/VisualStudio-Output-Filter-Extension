@@ -28,102 +28,61 @@ namespace FilteredOutputWindowVSX
 {
     public class FilteredOutputWindowViewModel : ViewModelBase
     {
-        private DTE _dte;
-        private Events _dteEvents;
-        private OutputWindowEvents _documentEvents;
+       
+        private Func<string, bool> _filterExpression;
+       
         private StringFilterContainer _default = new StringFilterContainer() { Name = "Everything" };
-        private Dictionary<string, string> _windowNames = new Dictionary<string, string>();
         public FilteredOutputWindowViewModel()
         {
             CreateCommands();
-            WindowList = new ObservableCollection<string>();
             AutoScroll = Properties.Settings.Default.AutoScroll;
             MultiFilterMode = (LogicalGate)Properties.Settings.Default.MultiFilterMode;
             FilterMode = (FilteringMode)Properties.Settings.Default.FilterMode;
 
-           
 
             Filters = new TrulyObservableCollection<FilterContainer>(GetSettings());
             Filters.CollectionChanged += (s, e) =>
             {
                 RaisePropertyChanged(nameof(FilterButtonName));
-                UpdateOutput();
                 UpdateSettings();
+                _filterExpression = CalculateFilterExpression();
             };
-           ColorList=new ObservableCollection<string>( typeof(Colors).GetProperties().Select(z=>z.Name));
-        }
-        public void PorcessNewInput(OutputWindowPane pane)
-        {
-            if (!_outputWindowContent.ContainsKey(pane.Name)) _outputWindowContent.Add(pane.Name, new List<PaneContentLineModel>());
-            var currentPaneContent = _outputWindowContent[pane.Name];
+            ColorList =new ObservableCollection<string>( typeof(Colors).GetProperties().Select(z=>z.Name));
+            _filterExpression = CalculateFilterExpression();
 
-
-            var newPaneContent = GetPaneData(pane);
-            if (currentPaneContent.Count() > newPaneContent.Count())
-            {
-                //pane cleared process all again
-                currentPaneContent = newPaneContent.Select(z=>new PaneContentLineModel { Text=z }).ToList();
-                currentPaneContent.ForEach(line => {
-                    line.MatchesFilter = FilterMode == FilteringMode.Include ? Expression(line.Text) : Expression.Not()(line.Text);
-
-                });
-               
-            }
-            else
-            {
-                var newLines = newPaneContent.Skip(currentPaneContent.Count()).Select(z=>new PaneContentLineModel { Text=z}).ToList();
-                currentPaneContent.ForEach(line => {
-                    line.MatchesFilter = FilterMode == FilteringMode.Include ? Expression(line.Text) : Expression.Not()(line.Text);
-
-                });
-                currentPaneContent.AddRange(newLines); 
-            }
-        }
-        public IEnumerable<string> TextToLines(string input)
-        {
-          return input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Where(a => !string.IsNullOrEmpty(a));
+         
         }
       
-
-        private void PaneUpdated(OutputWindowPane pane)
+      
+        private Func<string,bool> CalculateFilterExpression()
         {
-            if (!WindowList.Contains(pane.Name))
-            {
-                WindowList.Add(pane.Name);
-                if (string.IsNullOrEmpty(CurrentWindow)) CurrentWindow = pane.Name;
-            }
-            if (!_windowNames.ContainsKey(pane.Name)) _windowNames.Add(pane.Name, pane.Guid);
-            // See [IDE GUID](https://docs.microsoft.com/en-us/visualstudio/extensibility/ide-guids?view=vs-2017 )                
-            PorcessNewInput(pane);
-            UpdateOutput();
+         return  !SelectedFilters.Any() ? (s) => true :
+            (SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => MultiFilterMode == LogicalGate.Or ? PredicateBuilder.Or<string>(currentExpression, nextExpression) : PredicateBuilder.And<string>(currentExpression, nextExpression))).Compile();
         }
-        private string _currentText = string.Empty;
-        private string _currentWindow;
-        private Dictionary<string, List<PaneContentLineModel>> _outputWindowContent = new Dictionary<string, List<PaneContentLineModel>>();
+      
+      
         public LogicalGate _multiFilterMode;
         public FilteringMode _filterMode;
-        #region Prop for ViewModel
-        private StringBuilder _output = new StringBuilder();
+        private FilterContainer _editingFilter;
         private bool _autoScroll;
 
-        public string CurrentWindow { get => _currentWindow; set => Set(ref _currentWindow, value); }
-        public TrulyObservableCollection<FilterContainer> Filters { get; set; }
-
-           private FilterContainer _editingFilter;
+        #region Prop for ViewModel
+        private StringBuilder _output = new StringBuilder();
+        public TrulyObservableCollection<FilterContainer> Filters { get; set; } 
         public FilterContainer EditingFilter { get => _editingFilter; set => Set(ref _editingFilter, value); }
         private ObservableCollection<string> _colorList;
-        private ObservableCollection<string> _windowList;
-        private void AddToOutput(IEnumerable<string> input, bool reset = false)
+        private void AddToOutput(string input)
         {
-            if (reset) _output.Clear();
-            foreach (var i in input)
-            {
-                _output.AppendLine(i);
-            }
+            _output.AppendLine(input??string.Empty);
             RaisePropertyChanged(nameof(Output));
         }
-        public FilteringMode FilterMode { get => _filterMode; set { Set(ref _filterMode, value); Properties.Settings.Default.FilterMode = (int)value; Properties.Settings.Default.Save(); UpdateOutput(); } }
-        public LogicalGate MultiFilterMode { get => _multiFilterMode; set { Set(ref _multiFilterMode, value); Properties.Settings.Default.MultiFilterMode = (int)value; Properties.Settings.Default.Save(); UpdateOutput(); } }
+        private void ClearOutput()
+        {
+            _output.Clear();
+            RaisePropertyChanged(nameof(Output));
+        }
+        public FilteringMode FilterMode { get => _filterMode; set { Set(ref _filterMode, value); Properties.Settings.Default.FilterMode = (int)value; Properties.Settings.Default.Save();} }
+        public LogicalGate MultiFilterMode { get => _multiFilterMode; set { Set(ref _multiFilterMode, value); Properties.Settings.Default.MultiFilterMode = (int)value; Properties.Settings.Default.Save(); } }
         public string Output
         {
             get => _output.ToString();
@@ -159,45 +118,32 @@ namespace FilteredOutputWindowVSX
         
         public RelayCommand AddFilterRow { get; private set; }
         public RelayCommand ShowAbout { get; private set; }
+        public bool IsMatch(string text)
+        {
+            var isMatch = FilterMode == FilteringMode.Include ? Expression(text) : Expression.Not()(text);
+            return isMatch;
+        }
+      
         #endregion
 
         private void CreateCommands()
         {
             Clear = new RelayCommand(() =>
             {
-                
-                IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-                if (!string.IsNullOrEmpty(CurrentWindow))
-                {
-                    if (_windowNames.ContainsKey(CurrentWindow))
-                    {
-                        var id = Guid.Parse(_windowNames[CurrentWindow]);
-                        outWindow.GetPane(ref id, out IVsOutputWindowPane pane);
-
-                        pane.Clear();
-                        _outputWindowContent[CurrentWindow] = new List<PaneContentLineModel>();
-                        _currentText = string.Empty;
-                        UpdateOutput();
-                       
-                    }
-                }
-                Guid debugPaneGuid = VSConstants.GUID_OutWindowDebugPane;
-
+                ClearOutput();
+               
                
             });
             LoadedCommand = new RelayCommand(() =>
             {
 
-                _dte = (DTE)Package.GetGlobalService(typeof(SDTE));
-                _dteEvents = _dte.Events;
-                _documentEvents = _dteEvents.OutputWindowEvents;
-                _documentEvents.PaneUpdated += PaneUpdated;
+               
 
             });
             UnLoadedCommand =new RelayCommand(() =>
             {
 
-                _documentEvents.PaneUpdated -= PaneUpdated;
+               
 
             });
             AddNewFilter = new RelayCommand(() =>
@@ -284,31 +230,10 @@ namespace FilteredOutputWindowVSX
 
         public IEnumerable<FilterContainer> SelectedFilters => this.Filters?.Where(z => z.IsSelected)??Enumerable.Empty<FilterContainer>();
         public ObservableCollection<string> ColorList { get => _colorList; set => Set(ref _colorList, value); }
-        public ObservableCollection<string> WindowList { get => _windowList; set => Set(ref _windowList, value); } 
         public string FilterButtonName => $"{this.SelectedFilters.Count()} Filters Selected";
-        public Func<string, bool> Expression => !SelectedFilters.Any() ? (s)=>true :
-            (SelectedFilters.Select(z => z.Expression).Aggregate((currentExpression, nextExpression) => MultiFilterMode==LogicalGate.Or? PredicateBuilder.Or<string>(currentExpression, nextExpression):PredicateBuilder.And<string>(currentExpression, nextExpression))).Compile();
+        public Func<string, bool> Expression => _filterExpression;
         public bool CanDelete => SelectedFilters.Any();
        
 
-        private void UpdateOutput()
-        {
-         if(CurrentWindow!=null && _outputWindowContent.ContainsKey(CurrentWindow))   AddToOutput(_outputWindowContent[CurrentWindow].Where(z=>z.MatchesFilter).Select(z=>z.Text), true);
-        }
-
-        private IEnumerable<string> GetPaneData(OutputWindowPane pPane)
-        {
-            TextDocument document = pPane.TextDocument;
-            EditPoint point = document.StartPoint.CreateEditPoint();
-            var text= point.GetText(document.EndPoint);
-            return TextToLines(text);
-        }
-
-        private IEnumerable<string> ProcessString(string input, Func<string, bool> filter)
-        {
-            var textLines = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
-                                       .Where(a => !string.IsNullOrEmpty(a));
-            return filter != null ? FilterMode== FilteringMode.Include ? textLines.Where(filter) : textLines.Where(filter.Not()) : textLines;
-        }
     }
 }

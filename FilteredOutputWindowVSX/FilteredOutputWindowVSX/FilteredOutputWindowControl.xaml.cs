@@ -9,11 +9,12 @@
     using Microsoft.VisualStudio.Shell.Interop;
     using System.Linq;
     using Microsoft.VisualStudio;
+    using System.Diagnostics;
 
     public partial class FilteredOutputWindowControl : UserControl
     {
         FilteredOutputWindowViewModel _dataContext= new FilteredOutputWindowViewModel();
-
+       
         public FilteredOutputWindowControl()
         {
             this.InitializeComponent();
@@ -26,15 +27,30 @@
             };
         }
 
+        public void AddText(string text)
+        {
+           if(!string.IsNullOrEmpty(text) && _dataContext.IsMatch(text)) {
+
+                Output.AppendText(text);
+                Output.ScrollToEnd();
+                Debug.WriteLine(text);
+            }
+        }
+
         private void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //System.Windows.Interactive doesn't work with vs studio extension so stopping and starting events this not so nice way :(
-            _dataContext.LoadedCommand.Execute(null);
+            Output.Clear();
+
+
         }
 
         private void MyToolWindow_Unloaded(object sender, RoutedEventArgs e)
         {
-            _dataContext.UnLoadedCommand.Execute(null);
+        }
+
+        private void CleanButton_Click(object sender, RoutedEventArgs e)
+        {
+            Output.Clear();
         }
     }
 }

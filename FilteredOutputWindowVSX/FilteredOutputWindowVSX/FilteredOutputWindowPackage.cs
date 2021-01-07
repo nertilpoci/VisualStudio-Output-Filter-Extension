@@ -63,6 +63,7 @@ namespace FilteredOutputWindowVSX
         protected override  System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             FilteredOutputWindowCommand.Initialize(this);
+           
             return base.InitializeAsync(cancellationToken,progress);
         }
 

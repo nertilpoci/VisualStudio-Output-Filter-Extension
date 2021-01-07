@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              xmlns:extensions="clr-namespace:FilteredOutputWindowVSX.Extensions"
              xmlns:enums="clr-namespace:FilteredOutputWindowVSX.Enums"
-
+             xmlns:helpers="clr-namespace:FilteredOutputWindowVSX.Helpers"
              xmlns:controls="clr-namespace:FilteredOutputWindowVSX.Controls"
              xmlns:converters="clr-namespace:FilteredOutputWindowVSX.Converters"
              xmlns:s="clr-namespace:System;assembly=mscorlib"
@@ -83,10 +83,6 @@
                     Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.CommandBarToolBarBorderBrushKey}}" BorderThickness="0 0 0 0">
                 <Grid>
                     <StackPanel  Height="25" Margin="5"  Orientation="Horizontal" >
-                        <ComboBox Margin="5" Width="100" SelectedItem="{Binding CurrentWindow}" Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}" BorderBrush="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBorderBrushKey}}"
-             Foreground="{DynamicResource VsBrush.WindowText}" Style="{StaticResource {x:Static ToolBar.ComboBoxStyleKey}}"
-                          ItemsSource="{Binding WindowList}"
-                         />
                         <TextBlock  VerticalAlignment="Center" Margin="5 2">Filter</TextBlock>
                         
                         <Button Content="{Binding FilterButtonName}"  Background="{DynamicResource {x:Static vs_shell:EnvironmentColors.ComboBoxBackgroundBrushKey}}"
@@ -169,8 +165,8 @@
                             <Image  Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='add.png'}" Stretch="Fill" />
                         </Button>
 
-                        <Button ToolTip="Clear" Name="CleanButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
-                                Command="{Binding Clear}"
+                        <Button Click="CleanButton_Click" ToolTip="Clear" Name="CleanButton" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                            
                                 IsEnabled="{Binding IsRecording, Converter={StaticResource RevertBool}}"
                                 >
                             <Image Source="{Binding Converter={StaticResource PicConverter}, ConverterParameter='clear.png'}" />
@@ -198,12 +194,22 @@
                     <controls:FilterBuilder Margin="10,10,10,10" DockPanel.Dock="Top"
                                      HorizontalAlignment="Stretch"
                                      Visibility="{Binding EditingFilter, Converter={StaticResource NullToHiddenConverter}}"/>
-                    <TextBox Name="Output" ScrollViewer.HorizontalScrollBarVisibility="Auto"  ScrollViewer.VerticalScrollBarVisibility="Auto"  TextWrapping="NoWrap"  BorderBrush="Transparent"  Text="{Binding Output}"   Foreground="{DynamicResource VsBrush.WindowText}"
+                    <TextBox Name="Output" ScrollViewer.HorizontalScrollBarVisibility="Auto"  ScrollViewer.VerticalScrollBarVisibility="Auto"   BorderBrush="Transparent"  
+                                 Foreground="{DynamicResource VsBrush.WindowText}"
+                                 Background="{DynamicResource VsBrush.ToolWindowBackground}" 
                          IsReadOnly="True"
+                            
                          HorizontalAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          Padding="10"
-                         />
+                                 
+                         >
+                        <TextBox.Resources>
+                            <Style TargetType="{x:Type Paragraph}">
+                                <Setter Property="Margin" Value="0"/>
+                            </Style>
+                        </TextBox.Resources>
+                    </TextBox>
                 </DockPanel>
             </ScrollViewer>
         </DockPanel>
